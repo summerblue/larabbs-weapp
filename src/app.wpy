@@ -13,12 +13,14 @@
 <script>
 
 import wepy from 'wepy'
+import 'wepy-async-function'
 
 export default class extends wepy.app {
   config = {
     pages: [
       'pages/index',
-      'pages/user'
+      'pages/user',
+      'pages/login'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -44,7 +46,8 @@ export default class extends wepy.app {
   }
 
   globalData = {
-    userInfo: null
+    userInfo: null,
+    logged_in: false
   }
 
   constructor () {
@@ -54,9 +57,6 @@ export default class extends wepy.app {
   }
 
   onLaunch() {
-    wepy.login().then(res => {
-      console.log('login: ', res)
-    })
   }
 }
 </script>
