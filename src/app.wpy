@@ -1,12 +1,29 @@
 <style lang="less">
 @import 'style/weui.less';
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  box-sizing: border-box;
+.page__hd {
+  padding: 40px;
+}
+.page__bd {
+  padding-bottom: 40px;
+}
+.page__bd_spacing {
+  padding-left: 15px;
+  padding-right: 15px;
+}
+.page__ft{
+  padding-bottom: 10px;
+  text-align: center;
+}
+.page__title {
+  text-align: left;
+  font-size: 20px;
+  font-weight: 400;
+}
+.page__desc {
+  margin-top: 5px;
+  color: #888888;
+  text-align: left;
+  font-size: 14px;
 }
 </style>
 
@@ -14,6 +31,7 @@
 
 import wepy from 'wepy'
 import 'wepy-async-function'
+import api from './utils/api'
 
 export default class extends wepy.app {
   config = {
@@ -45,9 +63,28 @@ export default class extends wepy.app {
     }
   }
 
-  globalData = {
-    userInfo: null,
-    logged_in: false
+  async getUserInfo () {
+    if (!await this.checkLogin()) {
+      return null
+    }
+
+    let userInfo = await wepy.getStorageSync('userInfo')
+
+    // 登录了但是缓存中没有，请求接口获取
+    if (!userInfo) {
+      let userResponse = await api.authRequest('user')
+      if (userResponse.statusCode === 200) {
+        userInfo = userResponse.data
+        wepy.setStorageSync('userInfo', userInfo)
+      }
+    }
+
+    return userInfo
+  }
+
+  async checkLogin () {
+    let accessToken = await wepy.getStorageSync('access_token')
+    return (accessToken !== '')
   }
 
   constructor () {
