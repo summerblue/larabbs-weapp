@@ -34,12 +34,12 @@ const authRequest = async (options) => {
   wepy.showLoading({title: '加载中'})
 
   // 从缓存中取出 Token
-  let accessToken = await wepy.getStorageSync('access_token')
-  let expiredAt = await wepy.getStorageSync('access_token_expired_at')
+  let accessToken = wepy.getStorageSync('access_token')
+  let expiredAt = wepy.getStorageSync('access_token_expired_at')
 
   // 如果 token 过期了，则调用刷新方法
   if (accessToken && new Date().getTime() > expiredAt) {
-    let refreshResponse = await refresh(accessToken)
+    let refreshResponse = await refreshToken(accessToken)
 
     if (refreshResponse.statusCode === 200) {
       accessToken = refreshResponse.data.access_token
@@ -59,7 +59,7 @@ const authRequest = async (options) => {
   return request(options)
 }
 
-const refresh = async (accessToken) => {
+const refreshToken = async (accessToken) => {
   let refreshResponse = await wepy.request({
     url: host + '/' + 'authorizations/current',
     method: 'PUT',
@@ -99,7 +99,7 @@ const login = async (params = {}) => {
 }
 
 const logout = async (params = {}) => {
-  let accessToken = await wepy.getStorageSync('access_token')
+  let accessToken = wepy.getStorageSync('access_token')
 
   let logoutResponse = wepy.request({
     url: host + '/' + 'authorizations/current',
@@ -119,6 +119,7 @@ const logout = async (params = {}) => {
 module.exports = {
   request,
   authRequest,
+  refreshToken,
   login,
   logout
 }

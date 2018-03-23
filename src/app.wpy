@@ -70,13 +70,21 @@ export default class extends wepy.app {
 
     let userInfo = await wepy.getStorageSync('userInfo')
 
-    // 登录了但是缓存中没有，请求接口获取
-    if (!userInfo) {
-      let userResponse = await api.authRequest('user')
-      if (userResponse.statusCode === 200) {
-        userInfo = userResponse.data
-        wepy.setStorageSync('userInfo', userInfo)
+    try {
+      // 登录了但是缓存中没有，请求接口获取
+      if (!userInfo) {
+        let userResponse = await api.authRequest('user')
+        if (userResponse.statusCode === 200) {
+          userInfo = userResponse.data
+          wepy.setStorageSync('userInfo', userInfo)
+        }
       }
+    } catch (err) {
+      console.log(err)
+      wepy.showModal({
+        title: '提示',
+        content: '服务器错误，请联系管理员'
+      })
     }
 
     return userInfo
