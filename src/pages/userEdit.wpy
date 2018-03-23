@@ -1,0 +1,167 @@
+<style type="less">
+.avatar {
+  width: 80px;
+  height: 80px;
+  display: block;
+  border-radius: 50%;
+}
+.avatar-wrap {
+  margin-top: 10px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.introduction {
+  height: 3.3em;
+}
+.error-message {
+  color: #E64340;
+}
+</style>
+<template>
+  <view class="page">
+    <view class="page__bd">
+      <form bindsubmit="submit">
+        <view class="avatar-wrap">
+          <image class="avatar" src="{{userInfo.avatar}}" @tap="updateAvatar"/>
+        </view>
+        <view class="weui-cells__title">姓名</view>
+        <view class="weui-cells weui-cells_after-title">
+          <view class="weui-cell weui-cell_input">
+            <view class="weui-cell__bd">
+              <input class="weui-input" placeholder="请输入姓名" name="name" value="{{userInfo.name}}" />
+            </view>
+            <view wx:if="{{errors.name}}" class="weui-cell__ft">
+              <icon type="warn" size="23" color="#E64340"></icon>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{errors.name}}" class="weui-cells__tips error-message">{{errors.name[0]}}</view>
+
+        <view class="weui-cells__title">邮箱</view>
+        <view class="weui-cells weui-cells_after-title">
+          <view class="weui-cell weui-cell_input">
+            <view class="weui-cell__bd">
+              <input class="weui-input" placeholder="请输入邮箱" name="email" value="{{userInfo.email}}" />
+            </view>
+            <view wx:if="{{errors.email}}" class="weui-cell__ft">
+              <icon type="warn" size="23" color="#E64340"></icon>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{errors.email}}" class="weui-cells__tips error-message">{{errors.email[0]}}</view>
+
+        <view class="weui-cells__title">个人简介</view>
+        <view class="weui-cells weui-cells_after-title">
+          <view class="weui-cell">
+            <view class="weui-cell__bd">
+              <textarea class="weui-textarea introduction" placeholder="请输入简介" name="introduction" value="{{userInfo.introduction}}" />
+            </view>
+            <view wx:if="{{errors.introduction}}" class="weui-cell__ft">
+              <icon type="warn" size="23" color="#E64340"></icon>
+            </view>
+          </view>
+        </view>
+        <view wx:if="{{errors.introduction}}" class="weui-cells__tips error-message">{{errors.introduction[0]}}</view>
+
+        <view class="weui-btn-area">
+          <button class="weui-btn" type="primary" formType="submit">修改</button>
+        </view>
+      </form>
+    </view>
+  </view>
+</template>
+
+<script>
+  import wepy from 'wepy'
+  import api from '../utils/api'
+
+  export default class UserEdit extends wepy.page {
+    config = {
+      navigationBarTitleText: '修改个人信息'
+    }
+    data = {
+      userInfo: null,
+      errors: null,
+      avatarId: 0
+    }
+    async onShow() {
+      this.userInfo = await this.$parent.getUserInfo()
+      this.$apply()
+    }
+    async submit (e) {
+      this.errors = null
+      try {
+        let formData = e.detail.value
+
+        // 当avatarId被设置过之后则增加到 avatar_image_id 中
+        if (this.avatarId !== 0) {
+          formData.avatar_image_id = this.avatarId
+        }
+        let editResponse = await api.authRequest({
+          url: 'user',
+          method: 'PUT',
+          data: formData
+        })
+
+        // 设置报错信息
+        if (editResponse.statusCode === 422) {
+          this.errors = editResponse.data.errors
+          this.$apply()
+        }
+
+        // 请求成功，缓存用户数据
+        if (editResponse.statusCode === 200) {
+          this.userInfo = editResponse.data
+          wepy.setStorageSync('userInfo', editResponse.data)
+          this.$apply()
+
+          wepy.showToast({
+            title: '修改成功',
+            icon: 'success',
+            duration: 2000
+          })
+        }
+      } catch (err) {
+        console.log(err)
+        wepy.showModal({
+          title: '提示',
+          content: '服务器错误，请联系管理员'
+        })
+      }
+    }
+    methods = {
+      async updateAvatar () {
+        let image = await wepy.chooseImage()
+
+        try {
+          let avatar = image.tempFilePaths[0]
+
+          let imageResponse = await api.updateFile({
+            url: 'images',
+            method: 'POST',
+            name: 'image',
+            formData: {
+              type: 'avatar'
+            },
+            filePath: avatar
+          })
+
+          if (imageResponse.statusCode === 201) {
+            // 小程序上传结果没有做 JSON.parse，需要手动处理
+            let responseData = JSON.parse(imageResponse.data)
+            this.userInfo.avatar = responseData.path
+            this.avatarId = responseData.id
+            this.$apply()
+          }
+        } catch (err) {
+          console.log(err)
+          wepy.showModal({
+            title: '提示',
+            content: '服务器错误，请联系管理员'
+          })
+        }
+      }
+    }
+  }
+</script>

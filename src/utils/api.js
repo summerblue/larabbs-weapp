@@ -24,15 +24,7 @@ const request = async (options) => {
   return response
 }
 
-const authRequest = async (options) => {
-  if (typeof options === 'string') {
-    options = {
-      url: options
-    }
-  }
-
-  wepy.showLoading({title: '加载中'})
-
+const getToken = async (options) => {
   // 从缓存中取出 Token
   let accessToken = wepy.getStorageSync('access_token')
   let expiredAt = wepy.getStorageSync('access_token_expired_at')
@@ -51,6 +43,20 @@ const authRequest = async (options) => {
       }
     }
   }
+
+  return accessToken
+}
+
+const authRequest = async (options) => {
+  if (typeof options === 'string') {
+    options = {
+      url: options
+    }
+  }
+
+  wepy.showLoading({title: '加载中'})
+
+  let accessToken = await getToken()
 
   let header = options.header || {}
   header.Authorization = 'Bearer ' + accessToken
@@ -74,6 +80,23 @@ const refreshToken = async (accessToken) => {
   }
 
   return refreshResponse
+}
+
+const updateFile = async (options = {}) => {
+  wepy.showLoading({title: '上传中'})
+
+  let accessToken = await getToken()
+
+  options.url = host + '/' + options.url
+  let header = options.header || {}
+  header.Authorization = 'Bearer ' + accessToken
+  options.header = header
+
+  let response = await wepy.uploadFile(options)
+
+  wepy.hideLoading()
+
+  return response
 }
 
 const login = async (params = {}) => {
@@ -121,5 +144,6 @@ module.exports = {
   authRequest,
   refreshToken,
   login,
-  logout
+  logout,
+  updateFile
 }
