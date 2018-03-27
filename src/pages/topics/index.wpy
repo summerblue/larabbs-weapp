@@ -73,18 +73,26 @@
         height: auto;
     }
   }
+
+  .publish-button {
+    background-color: #2ab27b;
+  }
+  .category-icon {
+    margin-right: 10px;
+  }
 </style>
 <template>
 <view class="page">
   <view class="category-list__item">
     <view class="weui-flex category-list__item-hd" @tap="toggle">
-        <view class="weui-flex__item page-title">{{currentCategory.name || '话题'}}</view>
-        <image class="category-list__img" src="/images/category.png"></image>
+      <image class="category-list__img category-icon" src="/images/category.png"></image>
+      <view class="weui-flex__item page-title">{{currentCategory.name || '话题'}}</view>
+      <image class="category-list__img" src="/images/publish.png" @tap.stop="publish"></image>
     </view>
 
     <view class="category-list__item-bd {{categoryOpen ? 'category-list__item-bd_show' : ''}}">
       <view class="weui-cells {{categoryOpen ? 'weui-cells_show' : ''}}">
-        <view @tap="changeCatgory()" url="/" class="weui-cell weui-cell_access {{ !currentCategory.id ? 'category-list__item_selected' : ''}}">
+        <view @tap="changeCatgory()" class="weui-cell weui-cell_access {{ !currentCategory.id ? 'category-list__item_selected' : ''}}">
           <view class="weui-cell__bd">话题</view>
         </view>
         <view @tap="changeCatgory({{category.id}})" class="weui-cell weui-cell_access {{ currentCategory.id == category.id ? 'category-list__item_selected' : ''}}" wx:for="{{categories}}" wx:for-item="category" wx:key="id">
@@ -92,12 +100,13 @@
         </view>
       </view>
     </view>
+
   </view>
   <view class="page__bd">
     <view class="weui-panel weui-panel_access">
       <view class="weui-panel__bd">
         <repeat for="{{topics}}" wx:key="id" index="index" item="topic">
-          <navigator url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+          <navigator url="/pages/topics/show?id={{topic.id}}" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
             <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
               <image class="weui-media-box__thumb avatar" src="{{topic.user.avatar}}" />
             </view>
@@ -215,6 +224,11 @@
         this.currentCategory = id ? this.categories.find(category => category.id === id) : {}
         this.categoryOpen = false
         await this.getTopics(1, true)
+      },
+      publish() {
+        wx.navigateTo({
+          url: 'create'
+        })
       }
     }
   }
