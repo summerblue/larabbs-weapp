@@ -79,7 +79,7 @@
   <view class="category-list__item">
     <view class="weui-flex category-list__item-hd" @tap="toggle">
         <view class="weui-flex__item page-title">{{currentCategory.name || '话题'}}</view>
-        <image class="category-list__img" src="../images/category.png"></image>
+        <image class="category-list__img" src="/images/category.png"></image>
     </view>
 
     <view class="category-list__item-bd {{categoryOpen ? 'category-list__item-bd_show' : ''}}">
@@ -123,10 +123,10 @@
 </template>
 <script>
   import wepy from 'wepy'
-  import api from '../utils/api'
-  import util from '../utils/util'
+  import api from '@/utils/api'
+  import util from '@/utils/util'
 
-  export default class Index extends wepy.page {
+  export default class TopicIndex extends wepy.page {
     config = {
       enablePullDownRefresh: true
     }
