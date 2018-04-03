@@ -150,21 +150,6 @@ page{
       await this.getTopic(options.id)
       this.user = await this.$parent.getCurrentUser()
       this.$apply()
-
-      // 设置全局变量，控制列表刷新
-      let pages = this.getCurrentPages()
-      // 如果有上一页
-      if (pages.length > 1) {
-        // 检查所有已经打开的页面，如果是话题列表页面就记录下来
-        let refreshPages = []
-        pages.forEach((page) => {
-          if (page.route === 'pages/topics/index' || page.route === 'pages/topics/userIndex') {
-            refreshPages.push(page.route)
-          }
-        })
-        this.$parent.globalData.refreshPages = this.$parent.globalData.refreshPages.concat(refreshPages)
-        this.$apply()
-      }
     }
     methods = {
       async deleteTopic() {
