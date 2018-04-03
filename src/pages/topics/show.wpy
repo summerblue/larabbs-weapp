@@ -1,6 +1,6 @@
 <style type="less">
 page{
-    background-color: #FFFFFF;
+  background-color: #FFFFFF;
 }
 .avatar-wrap {
   position: relative;
@@ -15,13 +15,19 @@ page{
 .topic-title {
   padding: 15px;
 }
+.replyer-avatar {
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 50px;
+  height: 50px;
+}
 </style>
 <template>
   <view class="page">
     <view class="page__bd">
       <view class="weui-cells weui-cells_after-title">
-        <!-- <navigator class="weui-cell" url="/pages/users/show"> -->
-        <view class="weui-cell">
+        <navigator class="weui-cell" url="/pages/users/show?id={{topic.user.id}}" open-type="redirect">
           <view class="weui-cell__hd avatar-wrap">
             <image class="avatar" src="{{topic.user.avatar}}"/>
           </view>
@@ -29,10 +35,9 @@ page{
             <view>{{topic.user.name}}</view>
             <view class="page__desc">{{topic.user.introduction}}</view>
           </view>
-          <!-- <view class="weui-cell__ft weui-cell__ft_in-access"></view> -->
-        </view>
-      <!-- </navigator> -->
-    </view>
+          <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+        </navigator>
+      </view>
       <view class="topic-title">
         <view class="page__title">{{topic.title}}</view>
         <view class="weui-media-box__info topic-info">
@@ -44,7 +49,36 @@ page{
       <view class="weui-article">
         <rich-text nodes="{{topic.body}}" bindtap="tap"></rich-text>
 
+        <button wx:if="{{canDelete}}" @tap="deleteTopic" class="weui-btn mini-btn" type="default" size="mini">删除</button>
       </view>
+
+      <!-- 话题回复 -->
+      <view class="weui-panel weui-panel_access" wx:if="{{topic.reply_count}}">
+        <view class="weui-panel__hd">回复 ({{topic.reply_count}})</view>
+        <view class="weui-panel__bd">
+          <repeat for="{{topic.topReplies.data}}" wx:key="id" index="index" item="reply">
+            <view class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{topic.user.id}}">
+                <image class="replyer-avatar weui-media-box__thumb" src="{{reply.user.avatar}}" />
+              </navigator>
+              <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <view class="weui-media-box__title">{{reply.user.name}}</view>
+                <view class="weui-media-box__desc"><rich-text nodes="{{reply.content}}" bindtap="tap"></rich-text></view>
+                <view class="weui-media-box__info">
+                  <view class="weui-media-box__info__meta">{{reply.created_at_diff}}</view>
+                </view>
+              </view>
+            </view>
+          </repeat>
+        </view>
+        <view class="weui-panel__ft" wx:if="{{moreReplies}}">
+          <navigator class="weui-cell weui-cell_access weui-cell_link" url="/pages/replies/index?topic_id={{topic.id}}">
+            <view class="weui-cell__bd">查看全部回复</view>
+            <view class="weui-cell__ft weui-cell__ft_in-access"></view>
+          </navigator>
+        </view>
+      </view>
+
     </view>
   </view>
 </template>
@@ -59,22 +93,51 @@ page{
     }
     data = {
       title: '测试帖子标题',
-      topic: null
+      topic: null,
+      user: null
+    }
+    computed = {
+      canDelete() {
+        if (!this.topic || !this.user) {
+          return false
+        }
+        return this.user.id === this.topic.user_id
+      },
+      moreReplies() {
+        if (!this.topic) {
+          return false
+        }
+        return this.topic.reply_count > 5
+      }
     }
     async getTopic(id) {
       try {
         let topicResponse = await api.request({
           url: 'topics/' + id,
           data: {
-            include: 'user,category'
+            include: 'user,category,topReplies.user'
           }
         })
-        let topic = topicResponse.data
+        if (topicResponse.statusCode === 200) {
+          let topic = topicResponse.data
 
-        topic.updated_at_diff = util.diffForHumans(topic.updated_at)
+          topic.updated_at_diff = util.diffForHumans(topic.updated_at)
 
-        this.topic = topic
-        this.$apply()
+          // 处理回复数据的发布时间
+          topic.topReplies.data.forEach(function (reply) {
+            reply.created_at_diff = util.diffForHumans(reply.created_at)
+          })
+
+          this.topic = topic
+          this.$apply()
+        }
+
+        if (topicResponse.statusCode === 404) {
+          this.$parent.global.topicRefresh = true
+          wepy.navigateBack()
+        }
+
+        return topicResponse
       } catch (err) {
         console.log(err)
         wepy.showModal({
@@ -83,8 +146,70 @@ page{
         })
       }
     }
-    onLoad(options) {
-      this.getTopic(options.id)
+    async onLoad(options) {
+      await this.getTopic(options.id)
+      this.user = await this.$parent.getCurrentUser()
+      this.$apply()
+
+      // 设置全局变量，控制列表刷新
+      let pages = this.getCurrentPages()
+      // 如果有上一页
+      if (pages.length > 1) {
+        // 检查所有已经打开的页面，如果是话题列表页面就记录下来
+        let refreshPages = []
+        pages.forEach((page) => {
+          if (page.route === 'pages/topics/index' || page.route === 'pages/topics/userIndex') {
+            refreshPages.push(page.route)
+          }
+        })
+        this.$parent.globalData.refreshPages = this.$parent.globalData.refreshPages.concat(refreshPages)
+        this.$apply()
+      }
+    }
+    methods = {
+      async deleteTopic() {
+        let res = await wepy.showModal({
+          title: '确认删除',
+          content: '您确认删除该话题吗',
+          confirmText: '删除',
+          cancelText: '取消'
+        })
+
+        if (!res.confirm) {
+          return
+        }
+
+        let deleteResponse = await api.authRequest({
+          url: 'topics/' + this.topic.id,
+          method: 'DELETE'
+        })
+
+        if (deleteResponse.statusCode === 204) {
+          wepy.showToast({
+            title: '删除成功',
+            icon: 'success'
+          })
+
+          // 设置全局变量，控制列表刷新
+          let pages = this.getCurrentPages()
+          // 如果有上一页
+          if (pages.length > 1) {
+            // 检查所有已经打开的页面，如果是话题列表页面就记录下来
+            let refreshPages = []
+            pages.forEach((page) => {
+              if (page.route === 'pages/topics/index' || page.route === 'pages/topics/userIndex') {
+                refreshPages.push(page.route)
+              }
+            })
+            this.$parent.globalData.refreshPages = this.$parent.globalData.refreshPages.concat(refreshPages)
+            this.$apply()
+          }
+
+          setTimeout(function() {
+            wepy.navigateBack()
+          }, 2000)
+        }
+      }
     }
   }
 </script>

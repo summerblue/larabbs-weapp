@@ -1,0 +1,125 @@
+<style lang="less">
+.weui-media-box__info__meta {
+  margin: 0;
+  font-size: 12px;
+}
+.topic-info {
+  margin-top: 5px;
+}
+.topic-title {
+  white-space: normal;
+  font-size: 14px;
+}
+.avatar {
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  width: 50px;
+  height: 50px;
+}
+.reply-count {
+  background-color: #d8d8d8;
+  float: right;
+}
+</style>
+<template>
+ <view class="weui-panel weui-panel_access">
+    <view class="weui-panel__bd">
+      <repeat for="{{topics}}" wx:key="id" index="index" item="topic">
+        <navigator url="/pages/topics/show?id={{topic.id}}" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+          <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+            <image class="weui-media-box__thumb avatar" src="{{topic.user.avatar}}" />
+          </view>
+          <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+            <view class="weui-media-box__title topic-title">{{topic.title}}</view>
+
+            <view class="weui-media-box__info topic-info">
+              <view class="weui-media-box__info__meta">{{topic.category.name}} • </view>
+              <view class="weui-media-box__info__meta">{{topic.user.name}} • </view>
+              <view class="weui-media-box__info__meta">{{topic.updated_at_diff}}</view>
+            </view>
+          </view>
+          <view class="weui-badge reply-count">{{topic.reply_count}}</view>
+        </navigator>
+      </repeat>
+      <view class="weui-loadmore weui-loadmore_line" wx:if="{{noMoreData}}">
+        <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</view>
+      </view>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import util from '@/utils/util'
+  import api from '@/utils/api'
+
+  export default class TopicList extends wepy.component {
+    data = {
+      topics: [],
+      noMoreData: false,
+      isLoading: false
+    }
+    props = {
+      syncData: {
+        type: Object,
+        default: {}
+      },
+      syncUrl: {
+        type: String,
+        default: 'topics'
+      }
+    }
+    async getTopics(reset = false) {
+      if (!this.syncData.page) {
+        this.syncData.page = 1
+      }
+
+      this.syncData.include = 'user,category'
+      try {
+        let topicsResponse = await api.request({
+          url: this.syncUrl,
+          data: this.syncData
+        })
+
+        if (topicsResponse.statusCode === 200) {
+          let topics = topicsResponse.data.data
+
+          topics.forEach(function (topic) {
+            topic.updated_at_diff = util.diffForHumans(topic.updated_at)
+          })
+          this.topics = reset ? topics : this.topics.concat(topics)
+
+          let pagination = topicsResponse.data.meta.pagination
+
+          if (pagination.current_page === pagination.total_pages) {
+            this.noMoreData = true
+          }
+          this.$apply()
+        }
+
+        return topicsResponse
+      } catch (err) {
+        console.log(err)
+        wepy.showModal({
+          title: '提示',
+          content: '服务器错误，请联系管理员'
+        })
+      }
+    }
+    async loadMore () {
+      if (this.noMoreData || this.isLoading) {
+        return
+      }
+      this.isLoading = true
+      this.syncData.page = this.syncData.page + 1
+      await this.getTopics()
+      this.isLoading = false
+      this.$apply()
+    }
+    async reload() {
+      this.noMoreData = false
+      this.syncData.page = 1
+      return await this.getTopics(true)
+    }
+  }
+</script>

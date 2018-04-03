@@ -42,8 +42,12 @@ export default class extends wepy.app {
     pages: [
       'pages/topics/index',
       'pages/topics/show',
-      'pages/users/show',
+      'pages/topics/userIndex',
+      'pages/replies/index',
+      'pages/replies/userIndex',
       'pages/users/edit',
+      'pages/users/show',
+      'pages/users/me',
       'pages/auth/login'
     ],
     window: {
@@ -59,7 +63,7 @@ export default class extends wepy.app {
         iconPath: 'images/index.png',
         selectedIconPath: 'images/index_selected.png'
       }, {
-        pagePath: 'pages/users/show',
+        pagePath: 'pages/users/me',
         text: '我的',
         iconPath: 'images/user.png',
         selectedIconPath: 'images/user_selected.png'
@@ -69,7 +73,21 @@ export default class extends wepy.app {
     }
   }
 
-  async getUserInfo () {
+  globalData = {
+    refreshPages: []
+  }
+
+  checkRefreshPages (route, callback) {
+    let refreshIndex = this.globalData.refreshPages.indexOf(route)
+    if (refreshIndex === -1) {
+      return
+    }
+
+    this.globalData.refreshPages.splice(refreshIndex, 1)
+    callback && callback()
+  }
+
+  async getCurrentUser () {
     if (!await this.checkLogin()) {
       return null
     }

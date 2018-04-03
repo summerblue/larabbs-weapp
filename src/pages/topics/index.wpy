@@ -1,28 +1,5 @@
 <style type="less">
-  .weui-media-box__info__meta {
-    margin: 0;
-    font-size: 12px;
-  }
-  .topic-info {
-    margin-top: 5px;
-  }
-  .topic-title {
-    white-space: normal;
-    font-size: 14px;
-  }
-  .avatar {
-    padding: 4px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    width: 50px;
-    height: 50px;
-  }
-  .reply-count {
-    background-color: #d8d8d8;
-    float: right;
-  }
-
-    /*分类*/
+  /*分类*/
   .weui-flex {
     align-items: center;
   }
@@ -73,21 +50,13 @@
         height: auto;
     }
   }
-
-  .publish-button {
-    background-color: #2ab27b;
-  }
-  .category-icon {
-    margin-right: 10px;
-  }
 </style>
 <template>
 <view class="page">
   <view class="category-list__item">
     <view class="weui-flex category-list__item-hd" @tap="toggle">
-      <image class="category-list__img category-icon" src="/images/category.png"></image>
-      <view class="weui-flex__item page-title">{{currentCategory.name || '话题'}}</view>
-      <image class="category-list__img" src="/images/publish.png" @tap.stop="publish"></image>
+        <view class="weui-flex__item page-title">{{currentCategory.name || '话题'}}</view>
+        <image class="category-list__img" src="/images/category.png"></image>
     </view>
 
     <view class="category-list__item-bd {{categoryOpen ? 'category-list__item-bd_show' : ''}}">
@@ -100,40 +69,16 @@
         </view>
       </view>
     </view>
-
   </view>
   <view class="page__bd">
-    <view class="weui-panel weui-panel_access">
-      <view class="weui-panel__bd">
-        <repeat for="{{topics}}" wx:key="id" index="index" item="topic">
-          <navigator url="/pages/topics/show?id={{topic.id}}" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-            <view class="weui-media-box__hd weui-media-box__hd_in-appmsg">
-              <image class="weui-media-box__thumb avatar" src="{{topic.user.avatar}}" />
-            </view>
-            <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-              <view class="weui-media-box__title topic-title">{{topic.title}}</view>
-
-              <view class="weui-media-box__info topic-info">
-                <view class="weui-media-box__info__meta">{{topic.category.name}} • </view>
-                <view class="weui-media-box__info__meta">{{topic.user.name}} • </view>
-                <view class="weui-media-box__info__meta">{{topic.updated_at_diff}}</view>
-              </view>
-            </view>
-            <view class="weui-badge reply-count">{{topic.reply_count}}</view>
-          </navigator>
-        </repeat>
-        <view class="weui-loadmore weui-loadmore_line" wx:if="{{noMoreData}}">
-          <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</view>
-        </view>
-      </view>
-    </view>
+    <topiclist :syncData.sync="requestData"></topiclist>
   </view>
 </view>
 </template>
 <script>
   import wepy from 'wepy'
   import api from '@/utils/api'
-  import util from '@/utils/util'
+  import topicList from '@/components/topicList'
 
   export default class TopicIndex extends wepy.page {
     config = {
@@ -145,38 +90,15 @@
       noMoreData: false,
       categories: [],
       categoryOpen: false,
-      currentCategory: {}
+      currentCategory: {},
+      requestData: {}
     }
-    async getTopics(page = 1, reset = false) {
-      try {
-        let topicsResponse = await api.request({
-          url: 'topics',
-          data: {
-            page: page,
-            category_id: this.currentCategory.id || 0,
-            include: 'user,category'
-          }
-        })
-        let topics = topicsResponse.data.data
-
-        topics.forEach(function (topic) {
-          topic.updated_at_diff = util.diffForHumans(topic.updated_at)
-        })
-
-        this.topics = reset ? topics : this.topics.concat(topics)
-
-        let pagination = topicsResponse.data.meta.pagination
-
-        if (pagination.current_page === pagination.total_pages) {
-          this.noMoreData = true
-        }
-        this.$apply()
-      } catch (err) {
-        console.log(err)
-        wepy.showModal({
-          title: '提示',
-          content: '服务器错误，请联系管理员'
-        })
+    components = {
+      topiclist: topicList
+    }
+    computed = {
+      currentCategoryId () {
+        return this.currentCategory.id || 0
       }
     }
     async getCategories() {
@@ -201,20 +123,20 @@
       this.$apply()
     }
     async onLoad() {
-      this.getTopics()
       this.getCategories()
+      this.$invoke('topiclist', 'reload')
+    }
+    onShow() {
+      this.$parent.checkRefreshPages(this.getCurrentPages().pop().route, () => {
+        this.$invoke('topiclist', 'reload')
+      })
     }
     async onPullDownRefresh() {
-      await this.getTopics(1, true)
+      await this.$invoke('topiclist', 'reload')
       wepy.stopPullDownRefresh()
     }
     async onReachBottom () {
-      if (this.noMoreData) {
-        return
-      }
-      this.page = this.page + 1
-      await this.getTopics(this.page)
-      this.$apply()
+      await this.$invoke('topiclist', 'loadMore')
     }
     methods = {
       toggle () {
@@ -223,12 +145,10 @@
       async changeCatgory (id = 0) {
         this.currentCategory = id ? this.categories.find(category => category.id === id) : {}
         this.categoryOpen = false
-        await this.getTopics(1, true)
-      },
-      publish() {
-        wx.navigateTo({
-          url: 'create'
-        })
+        this.$apply()
+        this.requestData.category_id = this.currentCategoryId
+
+        this.$invoke('topiclist', 'reload')
       }
     }
   }

@@ -86,7 +86,7 @@
       avatarId: 0
     }
     async onShow() {
-      this.userInfo = await this.$parent.getUserInfo()
+      this.userInfo = await this.$parent.getCurrentUser()
       this.$apply()
     }
     async submit (e) {
