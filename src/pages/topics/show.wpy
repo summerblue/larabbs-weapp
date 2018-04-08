@@ -22,6 +22,13 @@ page{
   width: 50px;
   height: 50px;
 }
+.create-reply {
+  width: 40px;
+  height: 40px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+}
 </style>
 <template>
   <view class="page">
@@ -79,6 +86,10 @@ page{
         </view>
       </view>
 
+      <!-- 回复链接 -->
+      <navigator url="/pages/replies/create?topic_id={{topic.id}}">
+        <image src="/images/reply.png" class="create-reply" />
+      </navigator>
     </view>
   </view>
 </template>
@@ -150,6 +161,11 @@ page{
       await this.getTopic(options.id)
       this.user = await this.$parent.getCurrentUser()
       this.$apply()
+    }
+    onShow() {
+      this.$parent.checkRefreshPages(this.getCurrentPages().pop().route, () => {
+        this.getTopic(this.topic.id)
+      })
     }
     methods = {
       async deleteTopic() {

@@ -45,10 +45,12 @@ export default class extends wepy.app {
       'pages/topics/userIndex',
       'pages/replies/index',
       'pages/replies/userIndex',
+      'pages/replies/create',
       'pages/users/edit',
       'pages/users/show',
       'pages/users/me',
-      'pages/auth/login'
+      'pages/auth/login',
+      'pages/notifications/index'
     ],
     window: {
       backgroundTextStyle: 'light',
@@ -74,7 +76,8 @@ export default class extends wepy.app {
   }
 
   globalData = {
-    refreshPages: []
+    refreshPages: [],
+    unreadCount: 0
   }
 
   checkRefreshPages (route, callback) {
@@ -114,9 +117,8 @@ export default class extends wepy.app {
     return userInfo
   }
 
-  async checkLogin () {
-    let accessToken = await wepy.getStorageSync('access_token')
-    return (accessToken !== '')
+  checkLogin () {
+    return (wepy.getStorageSync('access_token') !== '')
   }
 
   constructor () {
@@ -126,6 +128,24 @@ export default class extends wepy.app {
   }
 
   onLaunch() {
+    this.updateUnreadCount()
+    setInterval(() => {
+      this.updateUnreadCount()
+    }, 10000)
+  }
+
+  async updateUnreadCount() {
+    // 未登录不需要请求
+    if (!this.checkLogin()) {
+      return
+    }
+
+    // 请求消息统计接口
+    let notificationResponse = await api.authRequest('user/notifications/stats', false)
+
+    if (notificationResponse.statusCode === 200) {
+      this.globalData.unreadCount = notificationResponse.data.unread_count
+    }
   }
 }
 </script>

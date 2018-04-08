@@ -49,12 +49,12 @@
       noMoreData: false,
       isLoading: false,
       page: 1,
-      user_id: 0
+      userId: 0
     }
     async getReplies(reset = false) {
       try {
         let repliesResponse = await api.request({
-          url: 'users/' + this.user_id + '/replies',
+          url: 'users/' + this.userId + '/replies',
           data: {
             page: this.page,
             include: 'topic,user'
@@ -87,13 +87,14 @@
       }
     }
     async onLoad(options) {
-      this.user_id = options.user_id
-      this.getReplies()
+      this.userId = options.user_id
+      this.getReplies(true)
     }
     async onPullDownRefresh() {
       this.noMoreData = false
       this.page = 1
-      return await this.getReplies(true)
+      await this.getReplies(true)
+      wepy.stopPullDownRefresh()
     }
     async onReachBottom () {
       if (this.noMoreData || this.isLoading) {

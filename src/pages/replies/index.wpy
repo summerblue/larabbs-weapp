@@ -6,6 +6,13 @@
   width: 50px;
   height: 50px;
 }
+.create-reply {
+  width: 40px;
+  height: 40px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+}
 </style>
 <template>
   <view class="page">
@@ -32,6 +39,11 @@
         </view>
       </view>
     </view>
+
+    <!-- 回复链接 -->
+    <navigator url="/pages/replies/create?topic_id={{topicId}}">
+      <image src="/images/reply.png" class="create-reply" />
+    </navigator>
   </view>
 </template>
 <script>
@@ -49,12 +61,12 @@
       noMoreData: false,
       isLoading: false,
       page: 1,
-      topic_id: 0
+      topicId: 0
     }
     async getReplies(reset = false) {
       try {
         let repliesResponse = await api.request({
-          url: 'topics/' + this.topic_id + '/replies',
+          url: 'topics/' + this.topicId + '/replies',
           data: {
             page: this.page,
             include: 'user'
@@ -86,14 +98,22 @@
         })
       }
     }
+    onShow() {
+      this.$parent.checkRefreshPages(this.getCurrentPages().pop().route, () => {
+        this.noMoreData = false
+        this.page = 1
+        this.getReplies(true)
+      })
+    }
     async onLoad(options) {
-      this.topic_id = options.topic_id
+      this.topicId = options.topic_id
       this.getReplies()
     }
     async onPullDownRefresh() {
       this.noMoreData = false
       this.page = 1
-      return await this.getReplies(true)
+      await this.getReplies(true)
+      wepy.stopPullDownRefresh()
     }
     async onReachBottom () {
       if (this.noMoreData || this.isLoading) {

@@ -1,0 +1,101 @@
+<style type="less">
+.content {
+  height: 5.3em;
+}
+</style>
+<template>
+  <view class="page">
+    <view class="page__bd">
+      <form bindsubmit="submit">
+        <view class="weui-cells__title">评论内容</view>
+          <view class="weui-cells weui-cells_after-title">
+            <view class="weui-cell">
+              <view class="weui-cell__bd">
+                <textarea class="weui-textarea content" placeholder="请输入评论内容" name="content"/>
+              </view>
+            </view>
+          </view>
+
+        <view class="weui-btn-area">
+          <button class="weui-btn" type="primary" formType="submit">提交</button>
+        </view>
+      </form>
+    </view>
+  </view>
+</template>
+<script>
+  import wepy from 'wepy'
+  import api from '@/utils/api'
+
+  export default class ReplyCreate extends wepy.page {
+    config = {
+      navigationBarTitleText: '添加回复'
+    }
+    data = {
+      topicId: 0
+    }
+    async onLoad(options) {
+      if (!await this.$parent.getCurrentUser()) {
+        wepy.navigateTo({
+          url: '/pages/auth/login'
+        })
+      }
+      this.topicId = options.topic_id
+    }
+    async submit (e) {
+      this.errors = null
+
+      let formData = e.detail.value
+      if (!formData.content) {
+        wepy.showToast({
+          title: '请填写内容',
+          icon: 'none',
+          duration: 2000
+        })
+
+        return
+      }
+
+      try {
+        let createResponse = await api.authRequest({
+          url: 'topics/' + this.topicId + '/replies',
+          method: 'POST',
+          data: formData
+        })
+
+        // 请求成功，缓存用户数据
+        if (createResponse.statusCode === 201) {
+          // 设置全局变量，控制列表刷新
+          let pages = this.getCurrentPages()
+          // 如果有上一页
+          if (pages.length > 1) {
+            // 检查所有已经打开的页面，如果是话题列表页面就记录下来
+            let refreshPages = []
+            pages.forEach((page) => {
+              if (page.route === 'pages/topics/show' || page.route === 'pages/replies/index') {
+                refreshPages.push(page.route)
+              }
+            })
+            this.$parent.globalData.refreshPages = this.$parent.globalData.refreshPages.concat(refreshPages)
+            this.$apply()
+          }
+
+          wepy.showToast({
+            title: '发布成功',
+            icon: 'success'
+          })
+
+          setTimeout(function() {
+            wepy.navigateBack()
+          }, 2000)
+        }
+      } catch (err) {
+        console.log(err)
+        wepy.showModal({
+          title: '提示',
+          content: '服务器错误，请联系管理员'
+        })
+      }
+    }
+  }
+</script>

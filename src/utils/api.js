@@ -2,18 +2,23 @@ import wepy from 'wepy'
 
 const host = 'http://larabbs.test/api'
 
-const request = async (options) => {
+const request = async (options, shoLoading = true) => {
   if (typeof options === 'string') {
     options = {
       url: options
     }
   }
-  wepy.showLoading({title: '加载中'})
+
+  if (shoLoading) {
+    wepy.showLoading({title: '加载中'})
+  }
 
   options.url = host + '/' + options.url
   let response = await wepy.request(options)
 
-  wepy.hideLoading()
+  if (shoLoading) {
+    wepy.hideLoading()
+  }
 
   if (response.statusCode === 500) {
     wepy.showModal({
@@ -47,14 +52,12 @@ const getToken = async (options) => {
   return accessToken
 }
 
-const authRequest = async (options) => {
+const authRequest = async (options, showLoading = true) => {
   if (typeof options === 'string') {
     options = {
       url: options
     }
   }
-
-  wepy.showLoading({title: '加载中'})
 
   let accessToken = await getToken()
 
@@ -62,7 +65,7 @@ const authRequest = async (options) => {
   header.Authorization = 'Bearer ' + accessToken
   options.header = header
 
-  return request(options)
+  return request(options, showLoading)
 }
 
 const refreshToken = async (accessToken) => {

@@ -1,0 +1,27 @@
+<style lang="less">
+.create-reply {
+  width: 40px;
+  height: 40px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+}
+</style>
+<template>
+	<!-- 浮动回复按钮 -->
+	<navigator url="/pages/replies/create?topic_id={{topicId}}">
+		<image src="/images/reply.png" class="create-reply" />
+	</navigator>
+</template>
+<script>
+  import wepy from 'wepy'
+
+  export default class replyCrate extends wepy.component {
+    props = {
+      topicId: {
+        type: Number,
+        default: 0
+      }
+    }
+  }
+</script>
