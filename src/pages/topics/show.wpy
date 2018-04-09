@@ -78,7 +78,7 @@ page{
             </view>
           </repeat>
         </view>
-        <view class="weui-panel__ft" wx:if="{{moreReplies}}">
+        <view class="weui-panel__ft">
           <navigator class="weui-cell weui-cell_access weui-cell_link" url="/pages/replies/index?topic_id={{topic.id}}">
             <view class="weui-cell__bd">查看全部回复</view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
@@ -113,12 +113,6 @@ page{
           return false
         }
         return this.user.id === this.topic.user_id
-      },
-      moreReplies() {
-        if (!this.topic) {
-          return false
-        }
-        return this.topic.reply_count > 5
       }
     }
     async getTopic(id) {

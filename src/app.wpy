@@ -50,6 +50,7 @@ export default class extends wepy.app {
       'pages/users/show',
       'pages/users/me',
       'pages/auth/login',
+      'pages/auth/register',
       'pages/notifications/index'
     ],
     window: {
@@ -131,7 +132,7 @@ export default class extends wepy.app {
     this.updateUnreadCount()
     setInterval(() => {
       this.updateUnreadCount()
-    }, 10000)
+    }, 60000)
   }
 
   async updateUnreadCount() {

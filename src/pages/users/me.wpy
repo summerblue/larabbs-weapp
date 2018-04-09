@@ -29,7 +29,7 @@
           </view>
           <view class="weui-cell__bd">
             <view>{{userInfo.name}}</view>
-            <view class="page__desc">{{userInfo.introduction}}</view>
+            <view class="page__desc">{{userInfo.introduction || ''}}</view>
           </view>
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
@@ -45,7 +45,7 @@
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
 
-        <navigator class="weui-cell weui-cell_access" url="/pages/notifications/index">
+        <navigator class="weui-cell weui-cell_access" url="{{ userInfo ? '/pages/notifications/index' : '/pages/auth/login'}}">
           <view class="weui-cell__bd" url="">
             <view class="weui-cell__bd">
               <view style="display: inline-block; vertical-align: middle">我的消息</view>
@@ -55,14 +55,14 @@
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
 
-        <navigator class="weui-cell weui-cell_access" url="/pages/topics/userIndex?user_id={{userInfo.id}}">
+        <navigator class="weui-cell weui-cell_access" url="{{ userInfo ? '/pages/topics/userIndex?user_id=' +userInfo.id : '/pages/auth/login'}}">
           <view class="weui-cell__bd" url="">
             <view class="weui-cell__bd">我的话题</view>
           </view>
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
 
-        <navigator class="weui-cell weui-cell_access" url="/pages/replies/userIndex?user_id={{userInfo.id}}">
+        <navigator class="weui-cell weui-cell_access" url="{{ userInfo ? '/pages/replies/userIndex?user_id=' +userInfo.id : '/pages/auth/login'}}">
           <view class="weui-cell__bd" url="">
             <view class="weui-cell__bd">我的回复</view>
           </view>

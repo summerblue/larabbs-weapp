@@ -10,7 +10,7 @@ export default class unreadCount extends wepy.mixin {
     this.updateUnreadCount()
     this.interval = setInterval(() => {
       this.updateUnreadCount()
-    }, 10000)
+    }, 30000)
   }
   onHide() {
     clearInterval(this.interval)
