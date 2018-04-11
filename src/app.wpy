@@ -91,6 +91,37 @@ export default class extends wepy.app {
     callback && callback()
   }
 
+  async can(targetPerm) {
+    if (!await this.checkLogin()) {
+      return false
+    }
+
+    let perms = await wepy.getStorageSync('perms')
+
+    // 缓存中没有则请求接口获取
+    if (!perms) {
+      try {
+        let permsResponse = await api.authRequest('user/permissions', false)
+        if (permsResponse.statusCode === 200) {
+          perms = permsResponse.data.data
+          wepy.setStorageSync('perms', perms)
+        }
+      } catch (err) {
+        console.log(err)
+        wepy.showModal({
+          title: '提示',
+          content: '服务器错误，请联系管理员'
+        })
+      }
+    }
+
+    if (perms.find(perm => perm.name === targetPerm)) {
+      return true
+    }
+
+    return false
+  }
+
   async getCurrentUser () {
     if (!await this.checkLogin()) {
       return null

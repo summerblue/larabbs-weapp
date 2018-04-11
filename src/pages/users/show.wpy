@@ -88,5 +88,20 @@
         })
       }
     }
+    onShareAppMessage (res) {
+      return {
+        title: this.userInfo.name,
+        path: '/pages/users/show/?id=' + this.userInfo.id,
+        imageUrl: this.userInfo.avatar,
+        success: function(res) {
+          // 转发成功
+          console.log(res)
+        },
+        fail: function(res) {
+          // 转发失败
+          console.log(res)
+        }
+      }
+    }
   }
 </script>

@@ -105,15 +105,16 @@ page{
     data = {
       title: '测试帖子标题',
       topic: null,
-      user: null
+      canDelete: false
     }
-    computed = {
-      canDelete() {
-        if (!this.topic || !this.user) {
-          return false
-        }
-        return this.user.id === this.topic.user_id
+    async checkCanDelete() {
+      let user = await this.$parent.getCurrentUser()
+
+      if ((user && user.id === this.topic.user_id) || await this.$parent.can('manage_contents')) {
+        this.canDelete = true
       }
+
+      this.$apply()
     }
     async getTopic(id) {
       try {
@@ -153,10 +154,9 @@ page{
     }
     async onLoad(options) {
       await this.getTopic(options.id)
-      this.user = await this.$parent.getCurrentUser()
-      this.$apply()
+      await this.checkCanDelete()
     }
-    onShow() {
+    async onShow() {
       this.$parent.checkRefreshPages(this.getCurrentPages().pop().route, () => {
         this.getTopic(this.topic.id)
       })
@@ -203,6 +203,20 @@ page{
           setTimeout(function() {
             wepy.navigateBack()
           }, 2000)
+        }
+      }
+    }
+    onShareAppMessage (res) {
+      return {
+        title: this.topic.title,
+        path: '/pages/topics/show/?id=' + this.topic.id,
+        success: function(res) {
+          // 转发成功
+          console.log(res)
+        },
+        fail: function(res) {
+          // 转发失败
+          console.log(res)
         }
       }
     }

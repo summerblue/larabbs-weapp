@@ -83,10 +83,10 @@
 
           // 获取当前用户
           let user = await this.$parent.getCurrentUser()
-          replies.forEach((reply) => {
-            reply.can_delete = this.canDelete(user, reply)
+          for (let reply of replies) {
+            reply.can_delete = await this.canDelete(user, reply)
             reply.created_at_diff = util.diffForHumans(reply.created_at)
-          })
+          }
 
           this.replies = reset ? replies : this.replies.concat(replies)
 
@@ -134,12 +134,12 @@
       this.isLoading = false
       this.$apply()
     }
-    canDelete(user, reply) {
+    async canDelete(user, reply) {
       if (!user) {
         return false
       }
 
-      return (reply.user_id === user.id)
+      return (await this.$parent.can('manage_contents') || reply.user_id === user.id)
     }
     methods = {
       async deleteReply(replyId) {
