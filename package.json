@@ -22,9 +22,10 @@
     "redux": "^3.7.2",
     "redux-actions": "^2.2.1",
     "redux-promise": "^0.5.3",
-    "wepy": "^1.6.0",
+    "wepy": "^1.7.1",
     "wepy-async-function": "^1.4.5",
     "wepy-com-toast": "^1.0.2",
+    "wepy-plugin-imagemin": "^1.5.3",
     "wepy-plugin-replace": "^1.5.10",
     "wepy-redux": "^1.5.3"
   },
@@ -42,8 +43,9 @@
     "eslint-plugin-html": "^2.0.1",
     "eslint-plugin-promise": "^3.5.0",
     "eslint-plugin-standard": "^2.0.1",
-    "wepy-compiler-babel": "^1.5.1",
+    "wepy-compiler-babel": "^1.5.2",
     "wepy-compiler-less": "^1.3.10",
-    "wepy-eslint": "^1.5.3"
+    "wepy-eslint": "^1.5.3",
+    "wepy-plugin-uglifyjs": "^1.3.7"
   }
 }

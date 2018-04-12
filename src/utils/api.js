@@ -1,6 +1,8 @@
 import wepy from 'wepy'
 
-const host = 'http://larabbs.test/api'
+console.log(wepy.appConfig)
+// 根据生产环境切换域名
+const host = __BASE_URL__
 
 const request = async (options, shoLoading = true) => {
   if (typeof options === 'string') {

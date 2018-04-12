@@ -41,18 +41,25 @@ module.exports = {
     }
   },
   plugins: {
+    replace: [{
+      filter: /moment\.js$/,
+      config: {
+        find: /([\w\[\]a-d\.]+)\s*instanceof Function/g,
+        replace: function (matchs, word) {
+          return ' typeof ' + word + " ==='function' "
+        }
+      }
+    }, {
+      filter: /\.js$/,
+      config: {
+        find: /__BASE_URL__/g,
+        // replace: prod ? "'https://weapp.laravel-china.org/api'" : "'http://larabbs.test/api'"
+        replace: prod ? "'http://larabbs.test/api'" : "'http://larabbs.test/api'"
+      }
+    }]
   },
   appConfig: {
     noPromiseAPI: ['createSelectorQuery']
-  },
-  replace: {
-    filter: /moment\.js$/,
-    config: {
-      find: /([\w\[\]a-d\.]+)\s*instanceof Function/g,
-      replace: function (matchs, word) {
-        return ' typeof ' + word + " ==='function' "
-      }
-    }
   }
 }
 
@@ -77,6 +84,22 @@ if (prod) {
           quality: 80
         }
       }
-    }
+    },
+    replace: [{
+      filter: /moment\.js$/,
+      config: {
+        find: /([\w\[\]a-d\.]+)\s*instanceof Function/g,
+        replace: function (matchs, word) {
+          return ' typeof ' + word + " ==='function' "
+        }
+      }
+    }, {
+      filter: /\.js$/,
+      config: {
+        find: /__BASE_URL__/g,
+        // replace: prod ? "'https://weapp.laravel-china.org/api'" : "'http://larabbs.test/api'"
+        replace: prod ? "'http://larabbs.test/api'" : "'http://larabbs.test/api'"
+      }
+    }]
   }
 }
