@@ -10,7 +10,7 @@
   <view class="page">
     <view class="page__bd register-wrap">
       <form bindsubmit="submit">
-        <view class="weui-toptips weui-toptips_warn" wx:if="{{errorMessage}}">{{errorMessage}}</view>
+        <view class="weui-toptips weui-toptips_warn" wx:if="{{ errorMessage }}">{{ errorMessage }}</view>
 
         <view class="weui-cells__title">Larabbs 手机注册</view>
 
@@ -18,15 +18,15 @@
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input {{ errors.phone ? 'weui-cell_warn' : ''}}">
             <view class="weui-cell__bd">
-              <input disabled="{{phoneDisabled}}" class="weui-input" placeholder="请输入手机号" @change="bindPhoneChange"/>
+              <input disabled="{{ phoneDisabled }}" class="weui-input" placeholder="请输入手机号" @change="bindPhoneChange"/>
             </view>
             <view class="weui-cell__ft">
-              <icon wx:if="{{errors.phone}}" type="warn" size="23" color="#E64340"></icon>
+              <icon wx:if="{{ errors.phone }}" type="warn" size="23" color="#E64340"></icon>
               <view class="weui-vcode-btn" @tap="tapCaptchaCode">获取验证码</view>
             </view>
           </view>
         </view>
-        <view wx:if="{{errors.phone}}" class="weui-cells__tips error-message">{{errors.phone[0]}}</view>
+        <view wx:if="{{ errors.phone }}" class="weui-cells__tips error-message">{{ errors.phone[0] }}</view>
 
         <view class="weui-cells__title {{ errors.verification_code ? 'weui-cell_warn' : ''}}">短信验证码</view>
         <view class="weui-cells weui-cells_after-title">
@@ -35,11 +35,11 @@
               <input class="weui-input" placeholder="请输入短信验证码" name="verification_code" />
             </view>
             <view class="weui-cell__ft">
-              <icon wx:if="{{errors.verification_code}}" type="warn" size="23" color="#E64340"></icon>
+              <icon wx:if="{{ errors.verification_code }}" type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
-        <view wx:if="{{errors.verification_code}}" class="weui-cells__tips error-message">{{errors.verification_code[0]}}</view>
+        <view wx:if="{{ errors.verification_code }}" class="weui-cells__tips error-message">{{ errors.verification_code[0] }}</view>
 
         <view class="weui-cells__title {{ errors.name ? 'weui-cell_warn' : ''}}">姓名</view>
         <view class="weui-cells weui-cells_after-title">
@@ -48,38 +48,38 @@
               <input class="weui-input" placeholder="请输入姓名" name="name" />
             </view>
             <view class="weui-cell__ft">
-              <icon wx:if="{{errors.name}}" type="warn" size="23" color="#E64340"></icon>
+              <icon wx:if="{{ errors.name }}" type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
-        <view wx:if="{{errors.name}}" class="weui-cells__tips error-message">{{errors.name[0]}}</view>
+        <view wx:if="{{ errors.name }}" class="weui-cells__tips error-message">{{ errors.name[0] }}</view>
 
-        <view class="weui-cells__title {{ errors.password ? 'weui-cell_warn' : ''}}">密码</view>
+        <view class="weui-cells__title {{ errors.password ? 'weui-cell_warn' : '' }}">密码</view>
         <view class="weui-cells weui-cells_after-title">
-          <view class="weui-cell weui-cell_input {{ errors.password ? 'weui-cell_warn' : ''}}">
+          <view class="weui-cell weui-cell_input {{ errors.password ? 'weui-cell_warn' : '' }}">
             <view class="weui-cell__bd">
               <input class="weui-input" placeholder="请输入密码" name="password" type="password"/>
             </view>
             <view class="weui-cell__ft">
-              <icon wx:if="{{errors.password}}" type="warn" size="23" color="#E64340"></icon>
+              <icon wx:if="{{ errors.password }}" type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
-        <view wx:if="{{errors.password}}" class="weui-cells__tips error-message">{{errors.password[0]}}</view>
+        <view wx:if="{{ errors.password }}" class="weui-cells__tips error-message">{{ errors.password[0] }}</view>
 
         <view class="weui-btn-area">
           <button class="weui-btn" type="primary" formType="submit">注册</button>
         </view>
       </form>
 
-      <modal class="modal" hidden="{{captchaModalHidden}}" no-cancel bindconfirm="sendVerificationCode">
-        <view wx:if="{{errors.captchaValue}}" class="weui-cells__tips error-message">{{errors.captchaValue[0]}}</view>
+      <modal class="modal" hidden="{{ captchaModalHidden }}" no-cancel bindconfirm="sendVerificationCode">
+        <view wx:if="{{ errors.captchaValue }}" class="weui-cells__tips error-message">{{ errors.captchaValue[0] }}</view>
         <view class="weui-cell weui-cell_input weui-cell_vcode">
           <view class="weui-cell__bd">
             <input class="weui-input" placeholder="图片验证码" @change="bindCaptchaCodeChange"/>
           </view>
           <view class="weui-cell__ft">
-            <image class="weui-vcode-img" @tap="tapCaptchaCode" src="{{captcha.imageContent}}" style="width: 100px"></image>
+            <image class="weui-vcode-img" @tap="tapCaptchaCode" src="{{ captcha.imageContent }}" style="width: 100px"></image>
           </view>
         </view>
       </modal>

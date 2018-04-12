@@ -1,6 +1,5 @@
 import wepy from 'wepy'
 
-console.log(wepy.appConfig)
 // 根据生产环境切换域名
 const host = __BASE_URL__
 
@@ -137,7 +136,7 @@ const logout = async (params = {}) => {
     }
   })
 
-  if (logoutResponse) {
+  if (logoutResponse.statusCode === 204) {
     wepy.clearStorage()
   }
 

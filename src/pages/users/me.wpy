@@ -23,13 +23,13 @@
       <view class="weui-cells weui-cells_after-title">
 
         <!-- 已登录 -->
-        <navigator class="weui-cell" wx:if="{{userInfo}}" url="edit">
+        <navigator class="weui-cell" wx:if="{{ userInfo }}" url="edit">
           <view class="weui-cell__hd avatar-wrap">
-            <image class="avatar" src="{{userInfo.avatar}}"/>
+            <image class="avatar" src="{{ userInfo.avatar }}"/>
           </view>
           <view class="weui-cell__bd">
-            <view>{{userInfo.name}}</view>
-            <view class="page__desc">{{userInfo.introduction || ''}}</view>
+            <view>{{ userInfo.name }}</view>
+            <view class="page__desc">{{ userInfo.introduction || '' }}</view>
           </view>
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
@@ -45,24 +45,24 @@
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
 
-        <navigator class="weui-cell weui-cell_access" url="{{ userInfo ? '/pages/notifications/index' : '/pages/auth/login'}}">
+        <navigator class="weui-cell weui-cell_access" url="{{  userInfo ? '/pages/notifications/index' : '/pages/auth/login' }}">
           <view class="weui-cell__bd" url="">
             <view class="weui-cell__bd">
               <view style="display: inline-block; vertical-align: middle">我的消息</view>
-              <view class="weui-badge" style="margin-left: 5px;" wx:if="{{unreadCount}}">{{unreadCount}}</view>
+              <view class="weui-badge" style="margin-left: 5px;" wx:if="{{ unreadCount }}">{{ unreadCount }}</view>
             </view>
           </view>
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
 
-        <navigator class="weui-cell weui-cell_access" url="{{ userInfo ? '/pages/topics/userIndex?user_id=' +userInfo.id : '/pages/auth/login'}}">
+        <navigator class="weui-cell weui-cell_access" url="{{  userInfo ? '/pages/topics/userIndex?user_id=' +userInfo.id : '/pages/auth/login' }}">
           <view class="weui-cell__bd" url="">
             <view class="weui-cell__bd">我的话题</view>
           </view>
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
 
-        <navigator class="weui-cell weui-cell_access" url="{{ userInfo ? '/pages/replies/userIndex?user_id=' +userInfo.id : '/pages/auth/login'}}">
+        <navigator class="weui-cell weui-cell_access" url="{{  userInfo ? '/pages/replies/userIndex?user_id=' +userInfo.id : '/pages/auth/login' }}">
           <view class="weui-cell__bd" url="">
             <view class="weui-cell__bd">我的回复</view>
           </view>
@@ -70,7 +70,7 @@
         </navigator>
       </view>
       <view class="page__bd page__bd_spacing logout">
-        <button class="weui-btn" type="warn" wx:if="{{userInfo}}" @tap="logout">退出登录</button>
+        <button class="weui-btn" type="warn" wx:if="{{ userInfo }}" @tap="logout">退出登录</button>
       </view>
     </view>
   </view>

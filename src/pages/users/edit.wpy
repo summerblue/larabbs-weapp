@@ -23,46 +23,46 @@
     <view class="page__bd">
       <form bindsubmit="submit">
         <view class="avatar-wrap">
-          <image class="avatar" src="{{userInfo.avatar}}" @tap="updateAvatar"/>
+          <image class="avatar" src="{{ userInfo.avatar }}" @tap="updateAvatar"/>
         </view>
         <view class="weui-cells__title">姓名</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input">
             <view class="weui-cell__bd">
-              <input class="weui-input" placeholder="请输入姓名" name="name" value="{{userInfo.name}}" />
+              <input class="weui-input" placeholder="请输入姓名" name="name" value="{{ userInfo.name }}" />
             </view>
-            <view wx:if="{{errors.name}}" class="weui-cell__ft">
+            <view wx:if="{{ errors.name }}" class="weui-cell__ft">
               <icon type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
-        <view wx:if="{{errors.name}}" class="weui-cells__tips error-message">{{errors.name[0]}}</view>
+        <view wx:if="{{ errors.name }}" class="weui-cells__tips error-message">{{ errors.name[0] }}</view>
 
         <view class="weui-cells__title">邮箱</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input">
             <view class="weui-cell__bd">
-              <input class="weui-input" placeholder="请输入邮箱" name="email" value="{{userInfo.email}}" />
+              <input class="weui-input" placeholder="请输入邮箱" name="email" value="{{ userInfo.email }}" />
             </view>
-            <view wx:if="{{errors.email}}" class="weui-cell__ft">
+            <view wx:if="{{ errors.email }}" class="weui-cell__ft">
               <icon type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
-        <view wx:if="{{errors.email}}" class="weui-cells__tips error-message">{{errors.email[0]}}</view>
+        <view wx:if="{{ errors.email }}" class="weui-cells__tips error-message">{{ errors.email[0] }}</view>
 
         <view class="weui-cells__title">个人简介</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell">
             <view class="weui-cell__bd">
-              <textarea class="weui-textarea introduction" placeholder="请输入简介" name="introduction" value="{{userInfo.introduction}}" />
+              <textarea class="weui-textarea introduction" placeholder="请输入简介" name="introduction" value="{{ userInfo.introduction }}" />
             </view>
-            <view wx:if="{{errors.introduction}}" class="weui-cell__ft">
+            <view wx:if="{{ errors.introduction }}" class="weui-cell__ft">
               <icon type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
-        <view wx:if="{{errors.introduction}}" class="weui-cells__tips error-message">{{errors.introduction[0]}}</view>
+        <view wx:if="{{ errors.introduction }}" class="weui-cells__tips error-message">{{ errors.introduction[0] }}</view>
 
         <view class="weui-btn-area">
           <button class="weui-btn" type="primary" formType="submit">修改</button>

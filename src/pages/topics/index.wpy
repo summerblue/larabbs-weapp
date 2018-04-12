@@ -55,17 +55,17 @@
 <view class="page">
   <view class="category-list__item">
     <view class="weui-flex category-list__item-hd" @tap="toggle">
-        <view class="weui-flex__item page-title">{{currentCategory.name || '话题'}}</view>
+        <view class="weui-flex__item page-title">{{ currentCategory.name || '话题'  }}</view>
         <image class="category-list__img" src="/images/category.png"></image>
     </view>
 
-    <view class="category-list__item-bd {{categoryOpen ? 'category-list__item-bd_show' : ''}}">
-      <view class="weui-cells {{categoryOpen ? 'weui-cells_show' : ''}}">
-        <view @tap="changeCatgory()" class="weui-cell weui-cell_access {{ !currentCategory.id ? 'category-list__item_selected' : ''}}">
+    <view class="category-list__item-bd {{ categoryOpen ? 'category-list__item-bd_show' : ''  }}">
+      <view class="weui-cells {{ categoryOpen ? 'weui-cells_show' : ''  }}">
+        <view @tap="changeCatgory()" class="weui-cell weui-cell_access {{  !currentCategory.id ? 'category-list__item_selected' : ''  }}">
           <view class="weui-cell__bd">话题</view>
         </view>
-        <view @tap="changeCatgory({{category.id}})" class="weui-cell weui-cell_access {{ currentCategory.id == category.id ? 'category-list__item_selected' : ''}}" wx:for="{{categories}}" wx:for-item="category" wx:key="id">
-          <view class="weui-cell__bd">{{category.name}}</view>
+        <view @tap="changeCatgory({{ category.id  }})" class="weui-cell weui-cell_access {{  currentCategory.id == category.id ? 'category-list__item_selected' : ''  }}" wx:for="{{ categories  }}" wx:for-item="category" wx:key="id">
+          <view class="weui-cell__bd">{{ category.name  }}</view>
         </view>
       </view>
     </view>

@@ -34,52 +34,52 @@ page{
   <view class="page">
     <view class="page__bd">
       <view class="weui-cells weui-cells_after-title">
-        <navigator class="weui-cell" url="/pages/users/show?id={{topic.user.id}}" open-type="redirect">
+        <navigator class="weui-cell" url="/pages/users/show?id={{ topic.user.id  }}" open-type="redirect">
           <view class="weui-cell__hd avatar-wrap">
-            <image class="avatar" src="{{topic.user.avatar}}"/>
+            <image class="avatar" src="{{ topic.user.avatar  }}"/>
           </view>
           <view class="weui-cell__bd">
-            <view>{{topic.user.name}}</view>
-            <view class="page__desc">{{topic.user.introduction}}</view>
+            <view>{{ topic.user.name  }}</view>
+            <view class="page__desc">{{ topic.user.introduction  }}</view>
           </view>
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
       </view>
       <view class="topic-title">
-        <view class="page__title">{{topic.title}}</view>
+        <view class="page__title">{{ topic.title  }}</view>
         <view class="weui-media-box__info topic-info">
-          <view class="weui-media-box__info__meta">{{topic.category.name}} • </view>
-          <view class="weui-media-box__info__meta">{{topic.updated_at_diff}} • </view>
-          <view class="weui-media-box__info__meta">{{topic.reply_count}} 次阅读</view>
+          <view class="weui-media-box__info__meta">{{ topic.category.name  }} • </view>
+          <view class="weui-media-box__info__meta">{{ topic.updated_at_diff  }} • </view>
+          <view class="weui-media-box__info__meta">{{ topic.reply_count  }} 次阅读</view>
         </view>
       </view>
       <view class="weui-article">
-        <rich-text nodes="{{topic.body}}" bindtap="tap"></rich-text>
+        <rich-text nodes="{{ topic.body  }}" bindtap="tap"></rich-text>
 
-        <button wx:if="{{canDelete}}" @tap="deleteTopic" class="weui-btn mini-btn" type="default" size="mini">删除</button>
+        <button wx:if="{{ canDelete  }}" @tap="deleteTopic" class="weui-btn mini-btn" type="default" size="mini">删除</button>
       </view>
 
       <!-- 话题回复 -->
-      <view class="weui-panel weui-panel_access" wx:if="{{topic.reply_count}}">
-        <view class="weui-panel__hd">回复 ({{topic.reply_count}})</view>
+      <view class="weui-panel weui-panel_access" wx:if="{{ topic.reply_count  }}">
+        <view class="weui-panel__hd">回复 ({{ topic.reply_count  }})</view>
         <view class="weui-panel__bd">
-          <repeat for="{{topic.topReplies.data}}" wx:key="id" index="index" item="reply">
+          <repeat for="{{ topic.topReplies.data  }}" wx:key="id" index="index" item="reply">
             <view class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{reply.user.id}}">
-                <image class="replyer-avatar weui-media-box__thumb" src="{{reply.user.avatar}}" />
+              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{ reply.user.id  }}">
+                <image class="replyer-avatar weui-media-box__thumb" src="{{ reply.user.avatar  }}" />
               </navigator>
               <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__title">{{reply.user.name}}</view>
-                <view class="weui-media-box__desc"><rich-text nodes="{{reply.content}}" bindtap="tap"></rich-text></view>
+                <view class="weui-media-box__title">{{ reply.user.name  }}</view>
+                <view class="weui-media-box__desc"><rich-text nodes="{{ reply.content  }}" bindtap="tap"></rich-text></view>
                 <view class="weui-media-box__info">
-                  <view class="weui-media-box__info__meta">{{reply.created_at_diff}}</view>
+                  <view class="weui-media-box__info__meta">{{ reply.created_at_diff  }}</view>
                 </view>
               </view>
             </view>
           </repeat>
         </view>
         <view class="weui-panel__ft">
-          <navigator class="weui-cell weui-cell_access weui-cell_link" url="/pages/replies/index?topic_id={{topic.id}}">
+          <navigator class="weui-cell weui-cell_access weui-cell_link" url="/pages/replies/index?topic_id={{ topic.id  }}">
             <view class="weui-cell__bd">查看全部回复</view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
           </navigator>
@@ -87,7 +87,7 @@ page{
       </view>
 
       <!-- 回复链接 -->
-      <navigator url="/pages/replies/create?topic_id={{topic.id}}">
+      <navigator url="/pages/replies/create?topic_id={{ topic.id  }}">
         <image src="/images/reply.png" class="create-reply" />
       </navigator>
     </view>

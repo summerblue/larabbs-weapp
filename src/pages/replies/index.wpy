@@ -23,22 +23,22 @@
     <view class="page__bd">
       <view class="weui-panel weui-panel_access">
         <view class="weui-panel__bd">
-          <repeat for="{{replies}}" wx:key="id" index="index" item="reply">
+          <repeat for="{{ replies }}" wx:key="id" index="index" item="reply">
             <view class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{reply.user_id}}">
-                <image class="replyer-avatar weui-media-box__thumb" src="{{reply.user.avatar}}" />
+              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{ reply.user_id }}">
+                <image class="replyer-avatar weui-media-box__thumb" src="{{ reply.user.avatar }}" />
               </navigator>
               <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__title">{{reply.user.name}}</view>
-                <view class="weui-media-box__desc"><rich-text nodes="{{reply.content}}" bindtap="tap"></rich-text></view>
+                <view class="weui-media-box__title">{{ reply.user.name }}</view>
+                <view class="weui-media-box__desc"><rich-text nodes="{{ reply.content }}" bindtap="tap"></rich-text></view>
                 <view class="weui-media-box__info">
-                  <view class="weui-media-box__info__meta">{{reply.created_at_diff}}</view>
+                  <view class="weui-media-box__info__meta">{{ reply.created_at_diff }}</view>
                 </view>
               </view>
-              <image wx:if="{{reply.can_delete}}" class="reply-delete" src="/images/trash.png" @tap="deleteReply({{reply.id}})"/>
+              <image wx:if="{{ reply.can_delete }}" class="reply-delete" src="/images/trash.png" @tap="deleteReply({{ reply.id }})"/>
             </view>
           </repeat>
-          <view class="weui-loadmore weui-loadmore_line" wx:if="{{noMoreData}}">
+          <view class="weui-loadmore weui-loadmore_line" wx:if="{{ noMoreData }}">
             <view class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</view>
           </view>
         </view>
@@ -46,7 +46,7 @@
     </view>
 
     <!-- 回复链接 -->
-    <navigator url="/pages/replies/create?topic_id={{topicId}}">
+    <navigator url="/pages/replies/create?topic_id={{ topicId }}">
       <image src="/images/reply.png" class="create-reply" />
     </navigator>
   </view>

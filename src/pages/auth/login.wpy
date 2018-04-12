@@ -6,7 +6,7 @@
 <template>
   <view class="page">
     <view class="page__bd login-wrap">
-      <view class="weui-toptips weui-toptips_warn" wx:if="{{error}}">{{errorMessage}}</view>
+      <view class="weui-toptips weui-toptips_warn" wx:if="{{ error }}">{{ errorMessage }}</view>
 
       <view class="weui-cells__title">Larabbs 用户登录</view>
       <view class="weui-cells weui-cells_after-title">
@@ -17,18 +17,18 @@
           <view class="weui-cell__bd">
             <input class="weui-input" placeholder="手机号或邮箱" @change="bindUsernameChange" />
           </view>
-          <view wx:if="{{error}}" class="weui-cell__ft">
+          <view wx:if="{{ error }}" class="weui-cell__ft">
             <icon type="warn" size="23" color="#E64340"></icon>
           </view>
         </view>
-        <view class="weui-cell weui-cell_input {{ error ? 'weui-cell_warn' : ''}}">
+        <view class="weui-cell weui-cell_input {{ error ? 'weui-cell_warn' : '' }}">
           <view class="weui-cell__hd">
             <view class="weui-label">密码</view>
           </view>
           <view class="weui-cell__bd">
             <input class="weui-input" placeholder="输入密码" @change="bindPasswordChange" />
           </view>
-          <view wx:if="{{error}}" class="weui-cell__ft">
+          <view wx:if="{{ error }}" class="weui-cell__ft">
             <icon type="warn" size="23" color="#E64340"></icon>
           </view>
         </view>

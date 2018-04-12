@@ -9,7 +9,7 @@
 </style>
 <template>
 	<!-- 浮动回复按钮 -->
-	<navigator url="/pages/replies/create?topic_id={{topicId}}">
+	<navigator url="/pages/replies/create?topic_id={{ topicId }}">
 		<image src="/images/reply.png" class="create-reply" />
 	</navigator>
 </template>
