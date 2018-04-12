@@ -65,7 +65,7 @@ page{
         <view class="weui-panel__bd">
           <repeat for="{{topic.topReplies.data}}" wx:key="id" index="index" item="reply">
             <view class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{topic.user.id}}">
+              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{reply.user.id}}">
                 <image class="replyer-avatar weui-media-box__thumb" src="{{reply.user.avatar}}" />
               </navigator>
               <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
@@ -209,7 +209,7 @@ page{
     onShareAppMessage(res) {
       return {
         title: this.topic.title,
-        path: '/pages/topics/show/?id=' + this.topic.id,
+        path: '/pages/topics/show?id=' + this.topic.id,
         success: function(res) {
           // 转发成功
           console.log(res)
