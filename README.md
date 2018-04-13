@@ -6,7 +6,7 @@
 
 LaraBBS 是一个简洁的论坛应用，使用 Laravel5.5 编写而成。一步步开发此项目的教程请见 [《Web 开发实战进阶  - 从零开始构建论坛系统》](https://laravel-china.org/topics/6592)。LaraBBS-WEAPP 是利用 LaraBBS 接口实现的小程序，教程请见 [《Laravel 微信小程序开发》](https://laravel-china.org/courses/laravel-weapp)
 
-![](https://lccdn.phphub.org/uploads/images/201804/12/3995/xPJM8LRJef.png?imageView2/2/w/1240/h/0)
+![](https://lccdn.phphub.org/uploads/images/201804/13/3995/9iABfC8yV3.jpeg?imageView2/2/w/1240/h/0)
 
 ## 功能如下
 
