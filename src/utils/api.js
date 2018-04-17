@@ -3,21 +3,21 @@ import wepy from 'wepy'
 // 根据生产环境切换域名
 const host = __BASE_URL__
 
-const request = async (options, shoLoading = true) => {
+const request = async (options, showLoading = true) => {
   if (typeof options === 'string') {
     options = {
       url: options
     }
   }
 
-  if (shoLoading) {
+  if (showLoading) {
     wepy.showLoading({title: '加载中'})
   }
 
   options.url = host + '/' + options.url
   let response = await wepy.request(options)
 
-  if (shoLoading) {
+  if (showLoading) {
     wepy.hideLoading()
   }
 
