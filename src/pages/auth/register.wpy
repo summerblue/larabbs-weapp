@@ -34,7 +34,7 @@
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input {{ errors.verification_code ? 'weui-cell_warn' : ''}}">
             <view class="weui-cell__bd">
-              <input class="weui-input" placeholder="请输入短信验证码" name="verification_code" />
+              <input class="weui-input" placeholder="请输入短信验证码，默认 123456" name="verification_code" />
             </view>
             <view class="weui-cell__ft">
               <icon wx:if="{{ errors.verification_code }}" type="warn" size="23" color="#E64340"></icon>
