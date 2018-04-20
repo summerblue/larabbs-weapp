@@ -1,69 +1,76 @@
-<style type="less">
-.avatar {
-  width: 80px;
-  height: 80px;
-  display: block;
-  border-radius: 50%;
-}
-.avatar-wrap {
-  margin-top: 10px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-.introduction {
-  height: 3.3em;
-}
-.error-message {
-  color: #E64340;
-}
+<style lang="less">
+  .introduction {
+    height: 3.3em;
+  }
+  .error-message {
+    color: #E64340;
+  }
+  .avatar {
+    width: 80px;
+    height: 80px;
+    display: block;
+    border-radius: 50%;
+  }
+  .avatar-wrap {
+    margin-top: 10px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 </style>
 <template>
   <view class="page">
     <view class="page__bd">
       <form bindsubmit="submit">
         <view class="avatar-wrap">
-          <image class="avatar" src="{{ userInfo.avatar }}" @tap="updateAvatar"/>
+          <image class="avatar" src="{{ user.avatar }}" @tap="updateAvatar"/>
         </view>
+        <!-- 填写姓名 -->
         <view class="weui-cells__title">姓名</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input">
             <view class="weui-cell__bd">
-              <input class="weui-input" placeholder="请输入姓名" name="name" value="{{ userInfo.name }}" />
+              <input class="weui-input" placeholder="请输入姓名" name="name" value="{{ user.name }}" />
             </view>
             <view wx:if="{{ errors.name }}" class="weui-cell__ft">
               <icon type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
+        <!-- 姓名错误信息 -->
         <view wx:if="{{ errors.name }}" class="weui-cells__tips error-message">{{ errors.name[0] }}</view>
 
+        <!-- 填写邮箱 -->
         <view class="weui-cells__title">邮箱</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input">
             <view class="weui-cell__bd">
-              <input class="weui-input" placeholder="请输入邮箱" name="email" value="{{ userInfo.email }}" />
+              <input class="weui-input" placeholder="请输入邮箱" name="email" value="{{ user.email }}" />
             </view>
             <view wx:if="{{ errors.email }}" class="weui-cell__ft">
               <icon type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
+        <!-- 邮箱错误信息 -->
         <view wx:if="{{ errors.email }}" class="weui-cells__tips error-message">{{ errors.email[0] }}</view>
 
+        <!-- 填写简介 -->
         <view class="weui-cells__title">个人简介</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell">
             <view class="weui-cell__bd">
-              <textarea class="weui-textarea introduction" placeholder="请输入简介" name="introduction" value="{{ userInfo.introduction }}" />
+              <textarea class="weui-textarea introduction" placeholder="请输入简介" name="introduction" value="{{ user.introduction }}" />
             </view>
             <view wx:if="{{ errors.introduction }}" class="weui-cell__ft">
               <icon type="warn" size="23" color="#E64340"></icon>
             </view>
           </view>
         </view>
+        <!-- 简介错误信息 -->
         <view wx:if="{{ errors.introduction }}" class="weui-cells__tips error-message">{{ errors.introduction[0] }}</view>
 
+        <!-- 提交表单 -->
         <view class="weui-btn-area">
           <button class="weui-btn" type="primary" formType="submit">修改</button>
         </view>
@@ -81,14 +88,19 @@
       navigationBarTitleText: '修改个人信息'
     }
     data = {
-      userInfo: null,
+      // 用户信息
+      user: null,
+      // 错误信息
       errors: null,
+      // 头像id
       avatarId: 0
     }
     async onShow() {
-      this.userInfo = await this.$parent.getCurrentUser()
+      // 获取当前用户信息
+      this.user = await this.$parent.getCurrentUser()
       this.$apply()
     }
+    // 表单提交
     async submit (e) {
       this.errors = null
       try {
@@ -98,6 +110,7 @@
         if (this.avatarId !== 0) {
           formData.avatar_image_id = this.avatarId
         }
+
         let editResponse = await api.authRequest({
           url: 'user',
           method: 'PUT',
@@ -112,8 +125,8 @@
 
         // 请求成功，缓存用户数据
         if (editResponse.statusCode === 200) {
-          this.userInfo = editResponse.data
-          wepy.setStorageSync('userInfo', editResponse.data)
+          this.user = editResponse.data
+          wepy.setStorageSync('user', editResponse.data)
           this.$apply()
 
           wepy.showToast({
@@ -132,11 +145,14 @@
     }
     methods = {
       async updateAvatar () {
-        let image = await wepy.chooseImage()
+        // 选择头像图片
+        let image = await wepy.chooseImage({count: 1})
 
         try {
+          // 获取选择的图片
           let avatar = image.tempFilePaths[0]
 
+          // 调用上传图片接口
           let imageResponse = await api.updateFile({
             url: 'images',
             method: 'POST',
@@ -147,10 +163,11 @@
             filePath: avatar
           })
 
+          // 上传成功成功记录数据
           if (imageResponse.statusCode === 201) {
             // 小程序上传结果没有做 JSON.parse，需要手动处理
             let responseData = JSON.parse(imageResponse.data)
-            this.userInfo.avatar = responseData.path
+            this.user.avatar = responseData.path
             this.avatarId = responseData.id
             this.$apply()
           }

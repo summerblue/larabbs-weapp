@@ -1,26 +1,29 @@
 import wepy from 'wepy'
 
-// 根据生产环境切换域名
 const host = __BASE_URL__
 
+// 普通请求
 const request = async (options, showLoading = true) => {
   if (typeof options === 'string') {
     options = {
       url: options
     }
   }
-
+  // 显示加载中
   if (showLoading) {
     wepy.showLoading({title: '加载中'})
   }
-
+  // 拼接请求地址
   options.url = host + '/' + options.url
+  // 调用小程序的 request 方法
   let response = await wepy.request(options)
 
   if (showLoading) {
-    wepy.hideLoading()
+	// 隐藏加载中
+	wepy.hideLoading()
   }
 
+  // 服务器异常后给与提示
   if (response.statusCode === 500) {
     wepy.showModal({
       title: '提示',
@@ -30,6 +33,52 @@ const request = async (options, showLoading = true) => {
   return response
 }
 
+// 登录
+const login = async (params = {}) => {
+  // code 只能使用一次，所以每次单独调用
+  let loginData = await wepy.login()
+
+  // 参数中增加code
+  params.code = loginData.code
+
+  // 接口请求 weapp/authorizations
+  let authResponse = await request({
+    url: 'weapp/authorizations',
+    data: params,
+    method: 'POST'
+  })
+
+  // 登录成功，记录 token 信息
+  if (authResponse.statusCode === 201) {
+    wepy.setStorageSync('access_token', authResponse.data.access_token)
+    wepy.setStorageSync('access_token_expired_at', new Date().getTime() + authResponse.data.expires_in * 1000)
+  }
+
+  return authResponse
+}
+
+// 刷新 Token
+const refreshToken = async (accessToken) => {
+  // 请求刷新接口
+  let refreshResponse = await wepy.request({
+    url: host + '/' + 'authorizations/current',
+    method: 'PUT',
+    header: {
+      'Authorization': 'Bearer ' + accessToken
+    }
+  })
+
+  // 刷新成功状态码为 200
+  if (refreshResponse.statusCode === 200) {
+    // 将 Token 及过期时间保存在 storage 中
+    wepy.setStorageSync('access_token', refreshResponse.data.access_token)
+    wepy.setStorageSync('access_token_expired_at', new Date().getTime() + refreshResponse.data.expires_in * 1000)
+  }
+
+  return refreshResponse
+}
+
+// 获取 Token
 const getToken = async (options) => {
   // 从缓存中取出 Token
   let accessToken = wepy.getStorageSync('access_token')
@@ -39,6 +88,7 @@ const getToken = async (options) => {
   if (accessToken && new Date().getTime() > expiredAt) {
     let refreshResponse = await refreshToken(accessToken)
 
+  // 刷新成功
     if (refreshResponse.statusCode === 200) {
       accessToken = refreshResponse.data.access_token
     } else {
@@ -53,15 +103,17 @@ const getToken = async (options) => {
   return accessToken
 }
 
+// 带身份认证的请求
 const authRequest = async (options, showLoading = true) => {
   if (typeof options === 'string') {
     options = {
       url: options
     }
   }
-
+  // 获取Token
   let accessToken = await getToken()
 
+  // 将 Token 设置在 header 中
   let header = options.header || {}
   header.Authorization = 'Bearer ' + accessToken
   options.header = header
@@ -69,65 +121,10 @@ const authRequest = async (options, showLoading = true) => {
   return request(options, showLoading)
 }
 
-const refreshToken = async (accessToken) => {
-  let refreshResponse = await wepy.request({
-    url: host + '/' + 'authorizations/current',
-    method: 'PUT',
-    header: {
-      'Authorization': 'Bearer ' + accessToken
-    }
-  })
-
-  if (refreshResponse.statusCode === 200) {
-    wepy.setStorageSync('access_token', refreshResponse.data.access_token)
-    wepy.setStorageSync('access_token_expired_at', new Date().getTime() + refreshResponse.data.expires_in * 1000)
-  }
-
-  return refreshResponse
-}
-
-const updateFile = async (options = {}) => {
-  wepy.showLoading({title: '上传中'})
-
-  let accessToken = await getToken()
-
-  options.url = host + '/' + options.url
-  let header = options.header || {}
-  header.Authorization = 'Bearer ' + accessToken
-  options.header = header
-
-  let response = await wepy.uploadFile(options)
-
-  wepy.hideLoading()
-
-  return response
-}
-
-const login = async (params = {}) => {
-  // code 只能使用一次，所以每次单独
-  let loginData = await wepy.login()
-
-  // 参数中增加code
-  params.code = loginData.code
-
-  let authResponse = await request({
-    url: 'weapp/authorizations',
-    data: params,
-    method: 'POST'
-  })
-
-  // 登录成功，记录token信息
-  if (authResponse.statusCode === 201) {
-    wepy.setStorageSync('access_token', authResponse.data.access_token)
-    wepy.setStorageSync('access_token_expired_at', new Date().getTime() + authResponse.data.expires_in * 1000)
-  }
-
-  return authResponse
-}
-
+//  退出登录
 const logout = async (params = {}) => {
   let accessToken = wepy.getStorageSync('access_token')
-
+  // 调用删除 Token 接口，让 Token 失效
   let logoutResponse = wepy.request({
     url: host + '/' + 'authorizations/current',
     method: 'DELETE',
@@ -136,11 +133,35 @@ const logout = async (params = {}) => {
     }
   })
 
+  // 调用接口成功则清空缓存
   if (logoutResponse.statusCode === 204) {
     wepy.clearStorage()
   }
 
   return logoutResponse
+}
+
+const updateFile = async (options = {}) => {
+  // 显示loading
+  wepy.showLoading({title: '上传中'})
+
+  // 获取 token
+  let accessToken = await getToken()
+
+  // 拼接url
+  options.url = host + '/' + options.url
+  let header = options.header || {}
+  // 将 token 设置在 header 中
+  header.Authorization = 'Bearer ' + accessToken
+  options.header = header
+
+  // 上传文件
+  let response = await wepy.uploadFile(options)
+
+  // 隐藏 loading
+  wepy.hideLoading()
+
+  return response
 }
 
 module.exports = {
@@ -151,3 +172,4 @@ module.exports = {
   logout,
   updateFile
 }
+

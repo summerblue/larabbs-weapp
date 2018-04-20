@@ -1,6 +1,6 @@
-<style type="less">
+<style lang="less">
 page{
-  background-color: #FFFFFF;
+    background-color: #FFFFFF;
 }
 .avatar-wrap {
   position: relative;
@@ -15,13 +15,6 @@ page{
 .topic-title {
   padding: 15px;
 }
-.replyer-avatar {
-  padding: 4px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-  width: 50px;
-  height: 50px;
-}
 .create-reply {
   width: 40px;
   height: 40px;
@@ -34,60 +27,61 @@ page{
   <view class="page">
     <view class="page__bd">
       <view class="weui-cells weui-cells_after-title">
-        <navigator class="weui-cell" url="/pages/users/show?id={{ topic.user.id  }}" open-type="redirect">
+        <navigator class="weui-cell" url="/pages/users/show?id={{ topic.user.id }}" open-type="redirect">
           <view class="weui-cell__hd avatar-wrap">
-            <image class="avatar" src="{{ topic.user.avatar  }}"/>
+            <image class="avatar" src="{{ topic.user.avatar }}"/>
           </view>
           <view class="weui-cell__bd">
-            <view>{{ topic.user.name  }}</view>
-            <view class="page__desc">{{ topic.user.introduction  }}</view>
+            <view>{{ topic.user.name }}</view>
+            <view class="page__desc">{{ topic.user.introduction }}</view>
           </view>
+          <!-- 向右的箭头 -->
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
       </view>
       <view class="topic-title">
-        <view class="page__title">{{ topic.title  }}</view>
+        <view class="page__title">{{ topic.title }}</view>
         <view class="weui-media-box__info topic-info">
-          <view class="weui-media-box__info__meta">{{ topic.category.name  }} • </view>
-          <view class="weui-media-box__info__meta">{{ topic.updated_at_diff  }} • </view>
-          <view class="weui-media-box__info__meta">{{ topic.reply_count  }} 次阅读</view>
+          <view class="weui-media-box__info__meta">{{ topic.category.name }} • </view>
+          <view class="weui-media-box__info__meta">{{ topic.updated_at_diff }} • </view>
+          <view class="weui-media-box__info__meta">{{ topic.reply_count }} 次阅读</view>
         </view>
       </view>
       <view class="weui-article">
-        <rich-text nodes="{{ topic.body  }}" bindtap="tap"></rich-text>
+        <rich-text nodes="{{ topic.body }}" bindtap="tap"></rich-text>
 
-        <button wx:if="{{ canDelete  }}" @tap="deleteTopic" class="weui-btn mini-btn" type="default" size="mini">删除</button>
+        <button wx:if="{{ canDelete }}" @tap="deleteTopic" class="weui-btn mini-btn" type="default" size="mini">删除</button>
       </view>
 
       <!-- 话题回复 -->
-      <view class="weui-panel weui-panel_access" wx:if="{{ topic.reply_count  }}">
-        <view class="weui-panel__hd">回复 ({{ topic.reply_count  }})</view>
+      <view class="weui-panel weui-panel_access" wx:if="{{ topic.reply_count }}">
+        <view class="weui-panel__hd">回复 ({{ topic.reply_count }})</view>
         <view class="weui-panel__bd">
-          <repeat for="{{ topic.topReplies.data  }}" wx:key="id" index="index" item="reply">
+          <repeat for="{{ topic.topReplies.data }}" wx:key="id" index="index" item="reply">
             <view class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
-              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{ reply.user.id  }}">
-                <image class="replyer-avatar weui-media-box__thumb" src="{{ reply.user.avatar  }}" />
+              <navigator class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{ reply.user.id }}">
+                <image class="replyer-avatar weui-media-box__thumb" src="{{ reply.user.avatar }}" />
               </navigator>
               <view class="weui-media-box__bd weui-media-box__bd_in-appmsg">
-                <view class="weui-media-box__title">{{ reply.user.name  }}</view>
-                <view class="weui-media-box__desc"><rich-text nodes="{{ reply.content  }}" bindtap="tap"></rich-text></view>
+                <view class="weui-media-box__title">{{ reply.user.name }}</view>
+                <view class="weui-media-box__desc"><rich-text nodes="{{ reply.content }}" bindtap="tap"></rich-text></view>
                 <view class="weui-media-box__info">
-                  <view class="weui-media-box__info__meta">{{ reply.created_at_diff  }}</view>
+                  <view class="weui-media-box__info__meta">{{ reply.created_at_diff }}</view>
                 </view>
               </view>
             </view>
           </repeat>
         </view>
         <view class="weui-panel__ft">
-          <navigator class="weui-cell weui-cell_access weui-cell_link" url="/pages/replies/index?topic_id={{ topic.id  }}">
+          <navigator class="weui-cell weui-cell_access weui-cell_link" url="/pages/replies/index?topic_id={{ topic.id }}">
             <view class="weui-cell__bd">查看全部回复</view>
             <view class="weui-cell__ft weui-cell__ft_in-access"></view>
           </navigator>
         </view>
       </view>
 
-      <!-- 回复链接 -->
-      <navigator url="/pages/replies/create?topic_id={{ topic.id  }}">
+      <!-- 回复按钮 -->
+      <navigator url="/pages/replies/create?topic_id={{ topic.id }}">
         <image src="/images/reply.png" class="create-reply" />
       </navigator>
     </view>
@@ -103,19 +97,23 @@ page{
       navigationBarTitleText: '话题详情'
     }
     data = {
-      title: '测试帖子标题',
+      // 话题数据
       topic: null,
-      canDelete: false
+      // 当前登录用户
+      user: null
     }
-    async checkCanDelete() {
-      let user = await this.$parent.getCurrentUser()
-
-      if ((user && user.id === this.topic.user_id) || await this.$parent.can('manage_contents')) {
-        this.canDelete = true
+    // 计算的属性
+    computed = {
+      // 是否可以删除话题
+      canDelete() {
+        if (!this.topic || !this.user) {
+          return false
+        }
+        // 当前用户是话题的发布者 或 有管理内容权限
+        return (this.user.id === this.topic.user_id) || this.$parent.can('manage_contents')
       }
-
-      this.$apply()
     }
+    // 获取话题数据
     async getTopic(id) {
       try {
         let topicResponse = await api.request({
@@ -127,6 +125,7 @@ page{
         if (topicResponse.statusCode === 200) {
           let topic = topicResponse.data
 
+          // 格式化 updated_at
           topic.updated_at_diff = util.diffForHumans(topic.updated_at)
 
           // 处理回复数据的发布时间
@@ -154,7 +153,9 @@ page{
     }
     async onLoad(options) {
       await this.getTopic(options.id)
-      await this.checkCanDelete()
+      // 获取当前登录用户
+      this.user = await this.$parent.getCurrentUser()
+      this.$apply()
     }
     async onShow() {
       this.$parent.checkRefreshPages(this.getCurrentPages().pop().route, () => {
@@ -163,6 +164,7 @@ page{
     }
     methods = {
       async deleteTopic() {
+        // 删除确认
         let res = await wepy.showModal({
           title: '确认删除',
           content: '您确认删除该话题吗',
@@ -170,15 +172,18 @@ page{
           cancelText: '取消'
         })
 
+        // 用户点击取消后返回
         if (!res.confirm) {
           return
         }
 
+        // 调用接口删除话题
         let deleteResponse = await api.authRequest({
           url: 'topics/' + this.topic.id,
           method: 'DELETE'
         })
 
+        // 删除成功，给出提示
         if (deleteResponse.statusCode === 204) {
           wepy.showToast({
             title: '删除成功',
@@ -192,6 +197,7 @@ page{
             // 检查所有已经打开的页面，如果是话题列表页面就记录下来
             let refreshPages = []
             pages.forEach((page) => {
+              // 已打开的页面中包换 话题列表 或 用户的话题列表
               if (page.route === 'pages/topics/index' || page.route === 'pages/topics/userIndex') {
                 refreshPages.push(page.route)
               }
@@ -200,13 +206,14 @@ page{
             this.$apply()
           }
 
+          // 2 秒后返回上一页
           setTimeout(function() {
             wepy.navigateBack()
           }, 2000)
         }
       }
     }
-    onShareAppMessage(res) {
+    onShareAppMessage (res) {
       return {
         title: this.topic.title,
         path: '/pages/topics/show?id=' + this.topic.id,

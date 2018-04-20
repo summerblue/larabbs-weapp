@@ -32,7 +32,6 @@ page{
 </style>
 
 <script>
-
 import wepy from 'wepy'
 import 'wepy-async-function'
 import api from '@/utils/api'
@@ -43,14 +42,14 @@ export default class extends wepy.app {
       'pages/topics/index',
       'pages/topics/show',
       'pages/topics/userIndex',
+      'pages/users/me',
+      'pages/users/edit',
+      'pages/users/show',
+      'pages/auth/login',
+      'pages/auth/register',
       'pages/replies/index',
       'pages/replies/userIndex',
       'pages/replies/create',
-      'pages/users/edit',
-      'pages/users/show',
-      'pages/users/me',
-      'pages/auth/login',
-      'pages/auth/register',
       'pages/notifications/index'
     ],
     window: {
@@ -76,66 +75,22 @@ export default class extends wepy.app {
     }
   }
 
-  globalData = {
-    refreshPages: [],
-    unreadCount: 0
-  }
-
-  checkRefreshPages (route, callback) {
-    let refreshIndex = this.globalData.refreshPages.indexOf(route)
-    if (refreshIndex === -1) {
-      return
-    }
-
-    this.globalData.refreshPages.splice(refreshIndex, 1)
-    callback && callback()
-  }
-
-  async can(targetPerm) {
-    if (!await this.checkLogin()) {
-      return false
-    }
-
-    let perms = await wepy.getStorageSync('perms')
-
-    // 缓存中没有则请求接口获取
-    if (!perms) {
-      try {
-        let permsResponse = await api.authRequest('user/permissions', false)
-        if (permsResponse.statusCode === 200) {
-          perms = permsResponse.data.data
-          wepy.setStorageSync('perms', perms)
-        }
-      } catch (err) {
-        console.log(err)
-        wepy.showModal({
-          title: '提示',
-          content: '服务器错误，请联系管理员'
-        })
-      }
-    }
-
-    if (perms.find(perm => perm.name === targetPerm)) {
-      return true
-    }
-
-    return false
-  }
-
+  // 获取当前登录用户信息
   async getCurrentUser () {
     if (!await this.checkLogin()) {
       return null
     }
 
-    let userInfo = await wepy.getStorageSync('userInfo')
+    // 从缓存中获取用户信息
+    let user = wepy.getStorageSync('user')
 
     try {
       // 登录了但是缓存中没有，请求接口获取
-      if (!userInfo) {
+      if (!user) {
         let userResponse = await api.authRequest('user')
         if (userResponse.statusCode === 200) {
-          userInfo = userResponse.data
-          wepy.setStorageSync('userInfo', userInfo)
+          user = userResponse.data
+          wepy.setStorageSync('user', user)
         }
       }
     } catch (err) {
@@ -146,9 +101,10 @@ export default class extends wepy.app {
       })
     }
 
-    return userInfo
+    return user
   }
 
+  // 用户是否已经登录
   checkLogin () {
     return (wepy.getStorageSync('access_token') !== '')
   }
@@ -159,13 +115,55 @@ export default class extends wepy.app {
     this.use('promisify')
   }
 
+  globalData = {
+    refreshPages: [],
+    unreadCount: 0
+  }
+  checkRefreshPages (route, callback) {
+    let refreshIndex = this.globalData.refreshPages.indexOf(route)
+    if (refreshIndex === -1) {
+      return
+    }
+
+    this.globalData.refreshPages.splice(refreshIndex, 1)
+    callback && callback()
+  }
+
   onLaunch() {
+    // 小程序启动，调用一起获取未读消息数
     this.updateUnreadCount()
+    // 每隔 60 秒，调用一起获取未读消息数
     setInterval(() => {
       this.updateUnreadCount()
     }, 60000)
-  }
 
+    // 获取用户权限
+    this.getPerms()
+  }
+  // 获取权限
+  async getPerms() {
+    let perms = []
+    if (!this.checkLogin()) {
+      return perms
+    }
+    // 缓存中没有则请求接口获取
+    try {
+      let permsResponse = await api.authRequest('user/permissions', false)
+      // 请求成功，放入 storage 缓存中
+      if (permsResponse.statusCode === 200) {
+        perms = permsResponse.data.data
+        wepy.setStorageSync('perms', perms)
+      }
+    } catch (err) {
+      console.log(err)
+      wepy.showModal({
+        title: '提示',
+        content: '获取用户权限失败，可尝试重启小程序'
+      })
+    }
+    return perms
+  }
+  // 获取未读消息数
   async updateUnreadCount() {
     // 未登录不需要请求
     if (!this.checkLogin()) {
@@ -175,9 +173,26 @@ export default class extends wepy.app {
     // 请求消息统计接口
     let notificationResponse = await api.authRequest('user/notifications/stats', false)
 
+    //  请求成功，赋值全局变量 unreadCount
     if (notificationResponse.statusCode === 200) {
       this.globalData.unreadCount = notificationResponse.data.unread_count
     }
+  }
+  // 判断用户权限
+  can(targetPerm) {
+    if (!this.checkLogin()) {
+      return false
+    }
+
+    // 获取缓存中的权限
+    let perms = wepy.getStorageSync('perms') || []
+
+    // 判断权限中是否有目标权限
+    if (perms.find(perm => perm.name === targetPerm)) {
+      return true
+    }
+
+    return false
   }
 }
 </script>

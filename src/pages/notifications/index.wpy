@@ -42,11 +42,16 @@
       navigationBarTitleText: '通知列表'
     }
     data = {
+      // 消息数据
       notifications: [],
+      // 是否有更多数据
       noMoreData: false,
+      // 是否正在加载
       isLoading: false,
+      // 当前分页
       page: 1
     }
+    // 获取消息
     async getNotifications(reset = false) {
       try {
         let notificationResponse = await api.authRequest({
@@ -59,13 +64,16 @@
         if (notificationResponse.statusCode === 200) {
           let notifications = notificationResponse.data.data
 
+          // 格式化 created_at
           notifications.forEach(function (notification) {
             notification.created_at_diff = util.diffForHumans(notification.created_at)
           })
+          // 覆盖还是合并数据
           this.notifications = reset ? notifications : this.notifications.concat(notifications)
 
           let pagination = notificationResponse.data.meta.pagination
 
+          // 根据分页判断是否有更多数据
           if (pagination.current_page === pagination.total_pages) {
             this.noMoreData = true
           }
@@ -94,6 +102,7 @@
         }, false)
 
         if (markResponse.statusCode === 204) {
+          // 设置全局未读消息为 0
           this.$parent.globalData.unreadCount = 0
           this.$apply()
         }
@@ -105,14 +114,18 @@
         })
       }
     }
+    // 下拉刷新
     async onPullDownRefresh() {
       this.noMoreData = false
       this.page = 1
       await this.getNotifications(true)
+      // 设置消息已读
       this.markAsRead()
       wepy.stopPullDownRefresh()
     }
+    // 加载更多
     async onReachBottom () {
+      // 没有更多数据或这在加载则返回
       if (this.noMoreData || this.isLoading) {
         return
       }

@@ -1,4 +1,4 @@
-<style type="less">
+<style lang="less">
 .login-wrap {
   margin-top: 50px;
 }
@@ -21,7 +21,7 @@
             <icon type="warn" size="23" color="#E64340"></icon>
           </view>
         </view>
-        <view class="weui-cell weui-cell_input {{ error ? 'weui-cell_warn' : '' }}">
+        <view class="weui-cell weui-cell_input {{ error ? 'weui-cell_warn' : ''}}">
           <view class="weui-cell__hd">
             <view class="weui-label">密码</view>
           </view>
@@ -33,6 +33,7 @@
           </view>
         </view>
       </view>
+
       <view class="weui-agree__text">
         如果你还没有 Larabbs 用户可以 <navigator url="/pages/auth/register" class="weui-agree__link">注册新用户</navigator>
       </view>
@@ -53,19 +54,27 @@
       navigationBarTitleText: '登录'
     }
     data = {
+      // 用户名
       username: '',
+      // 密码
       password: '',
+      // 是否有错
       error: false,
+      // 错误信息
       errorMessage: ''
     }
     methods = {
+      // 绑定用户名 input 变化
       bindUsernameChange (e) {
         this.username = e.detail.value
       },
+      // 绑定密码 input 变化
       bindPasswordChange (e) {
         this.password = e.detail.value
       },
+      // 表单提交
       async submmit() {
+        // 提交时重置错误
         this.error = false
 
         // 获取用户名和密码
@@ -77,13 +86,17 @@
         try {
           let authResponse = await api.login(params)
 
+          // 请求结果为 401 说明用户名和密码错误，显示错误提示
           if (authResponse.statusCode === 401) {
             this.error = true
             this.errorMessage = authResponse.data.message
             this.$apply()
           }
 
+          // 201 为登录正确，返回上一页
           if (authResponse.statusCode === 201) {
+            // 获取用户权限
+            this.$parent.getPerms()
             wepy.navigateBack()
           }
         } catch (err) {
@@ -94,11 +107,16 @@
         }
       }
     }
+    // 页面打开事件
     async onShow() {
       try {
+        // 打开页面自动调用一次登录
         let authResponse = await api.login()
 
+        // 登录成功返回上一页
         if (authResponse.statusCode === 201) {
+          // 获取用户权限
+          this.$parent.getPerms()
           wepy.navigateBack()
         }
       } catch (err) {

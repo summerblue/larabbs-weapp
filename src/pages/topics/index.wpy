@@ -1,4 +1,4 @@
-<style type="less">
+<style lang="less">
   /*分类*/
   .weui-flex {
     align-items: center;
@@ -55,22 +55,23 @@
 <view class="page">
   <view class="category-list__item">
     <view class="weui-flex category-list__item-hd" @tap="toggle">
-        <view class="weui-flex__item page-title">{{ currentCategory.name || '话题'  }}</view>
+        <view class="weui-flex__item page-title">{{ currentCategory.name || '话题' }}</view>
         <image class="category-list__img" src="/images/category.png"></image>
     </view>
 
-    <view class="category-list__item-bd {{ categoryOpen ? 'category-list__item-bd_show' : ''  }}">
-      <view class="weui-cells {{ categoryOpen ? 'weui-cells_show' : ''  }}">
-        <view @tap="changeCatgory()" class="weui-cell weui-cell_access {{  !currentCategory.id ? 'category-list__item_selected' : ''  }}">
+    <view class="category-list__item-bd {{ categoryOpen ? 'category-list__item-bd_show' : '' }}">
+      <view class="weui-cells {{ categoryOpen ? 'weui-cells_show' : '' }}">
+        <view @tap="changeCatgory()" class="weui-cell weui-cell_access {{ !currentCategory.id ? 'category-list__item_selected' : ''}}">
           <view class="weui-cell__bd">话题</view>
         </view>
-        <view @tap="changeCatgory({{ category.id  }})" class="weui-cell weui-cell_access {{  currentCategory.id == category.id ? 'category-list__item_selected' : ''  }}" wx:for="{{ categories  }}" wx:for-item="category" wx:key="id">
-          <view class="weui-cell__bd">{{ category.name  }}</view>
+        <view @tap="changeCatgory({{ category.id }})" class="weui-cell weui-cell_access {{ currentCategory.id == category.id ? 'category-list__item_selected' : ''}}" wx:for="{{ categories }}" wx:for-item="category" wx:key="id">
+          <view class="weui-cell__bd">{{ category.name }}</view>
         </view>
       </view>
     </view>
   </view>
   <view class="page__bd">
+    <!-- 使用 topiclist，传入 requestData 数据 -->
     <topiclist :syncData.sync="requestData"></topiclist>
   </view>
 </view>
@@ -87,22 +88,23 @@
     }
     data = {
       topics: [],
-      page: 1,
-      noMoreData: false,
       categories: [],
       categoryOpen: false,
       currentCategory: {},
       requestData: {}
     }
+    mixins = [unreadCount]
+    // 使用 topicList 组件
     components = {
       topiclist: topicList
     }
     computed = {
+      // 当前选中的分类id
       currentCategoryId () {
         return this.currentCategory.id || 0
       }
     }
-    mixins = [unreadCount]
+    // 获取分类数据
     async getCategories() {
       let categories = wepy.getStorageSync('categories')
 
@@ -111,6 +113,7 @@
           let categoriesResponse = await api.request('categories')
           if (categoriesResponse.statusCode === 200) {
             categories = categoriesResponse.data.data
+            // 缓存到 sotrage 中
             wepy.setStorageSync('categories', categories)
           }
         } catch (err) {
@@ -125,7 +128,9 @@
       this.$apply()
     }
     async onLoad() {
+      // 获取分类数据
       this.getCategories()
+      // 调用组件的 reload 方法
       this.$invoke('topiclist', 'reload')
     }
     onShow() {
@@ -134,22 +139,27 @@
       })
     }
     async onPullDownRefresh() {
+      // 调用组件的 reload 方法
       await this.$invoke('topiclist', 'reload')
       wepy.stopPullDownRefresh()
     }
     async onReachBottom () {
+      // 调用组件的 loadMore 方法
       await this.$invoke('topiclist', 'loadMore')
     }
     methods = {
+      // 切换分类列表展示
       toggle () {
         this.categoryOpen = !this.categoryOpen
       },
+      // 选择分类重新加载
       async changeCatgory (id = 0) {
         this.currentCategory = id ? this.categories.find(category => category.id === id) : {}
         this.categoryOpen = false
         this.$apply()
         this.requestData.category_id = this.currentCategoryId
 
+        // 调用组件的 reload 方法
         this.$invoke('topiclist', 'reload')
       }
     }

@@ -1,5 +1,5 @@
-const path = require('path')
-var prod = process.env.NODE_ENV === 'production'
+const path = require('path');
+var prod = process.env.NODE_ENV === 'production';
 
 module.exports = {
   wpyExt: '.wpy',
@@ -24,9 +24,9 @@ module.exports = {
     less: {
       compress: prod
     },
-    /* sass: {
+    /*sass: {
       outputStyle: 'compressed'
-    }, */
+    },*/
     babel: {
       sourceMap: true,
       presets: [
@@ -36,26 +36,18 @@ module.exports = {
         'transform-class-properties',
         'transform-decorators-legacy',
         'transform-object-rest-spread',
-        'transform-export-extensions'
+        'transform-export-extensions',
       ]
     }
   },
   plugins: {
-    replace: [{
-      filter: /moment\.js$/,
-      config: {
-        find: /([\w\[\]a-d\.]+)\s*instanceof Function/g,
-        replace: function (matchs, word) {
-          return ' typeof ' + word + " ==='function' "
-        }
-      }
-    }, {
+    replace: {
       filter: /\.js$/,
       config: {
         find: /__BASE_URL__/g,
         replace: prod ? "'https://weapp.laravel-china.org/api'" : "'http://larabbs.test/api'"
       }
-    }]
+    }
   },
   appConfig: {
     noPromiseAPI: ['createSelectorQuery']
@@ -63,6 +55,7 @@ module.exports = {
 }
 
 if (prod) {
+
   // 压缩sass
   // module.exports.compilers['sass'] = {outputStyle: 'compressed'}
 
@@ -84,20 +77,12 @@ if (prod) {
         }
       }
     },
-    replace: [{
-      filter: /moment\.js$/,
-      config: {
-        find: /([\w\[\]a-d\.]+)\s*instanceof Function/g,
-        replace: function (matchs, word) {
-          return ' typeof ' + word + " ==='function' "
-        }
-      }
-    }, {
+    replace: {
       filter: /\.js$/,
       config: {
         find: /__BASE_URL__/g,
         replace: prod ? "'https://weapp.laravel-china.org/api'" : "'http://larabbs.test/api'"
       }
-    }]
+    }
   }
 }

@@ -24,6 +24,7 @@
     onLoad(options) {
       this.requestUrl = 'users/' + options.user_id + '/topics'
       this.$apply()
+      // 调用组件 reload 方法
       this.$invoke('topiclist', 'reload')
     }
     onShow() {
@@ -31,11 +32,15 @@
         this.$invoke('topiclist', 'reload')
       })
     }
+    // 下拉刷新
     async onPullDownRefresh() {
+      // 调用组件 reload 方法
       await this.$invoke('topiclist', 'reload')
       wepy.stopPullDownRefresh()
     }
+    // 上拉加载更多
     async onReachBottom () {
+      // 调用组件 loadMore 方法
       this.$invoke('topiclist', 'loadMore')
     }
   }

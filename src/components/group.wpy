@@ -3,10 +3,10 @@
 </style>
 <template>
   <view class="group">
-    <text class="id">{{ grouplist.id }}. </text>
-    <text class="name" @tap="tap">{{ grouplist.name }}</text>
+    <text class="id">{{grouplist.id}}. </text>
+    <text class="name" @tap="tap">{{grouplist.name}}</text>
     <view>
-      <repeat for="{{ grouplist.list }}" item="item">
+      <repeat for="{{grouplist.list}}" item="item">
         <groupitem :gitem="item"></groupitem>
       </repeat>
     </view>

@@ -55,20 +55,26 @@
 
   export default class TopicList extends wepy.component {
     data = {
+      // 话题数据
       topics: [],
+      // 有没有更多数据
       noMoreData: false,
+      // 是否在加载中
       isLoading: false
     }
     props = {
+      // 父页面传入，请求参数
       syncData: {
         type: Object,
         default: {}
       },
+      // 父页面闯入，请求url
       syncUrl: {
         type: String,
         default: 'topics'
       }
     }
+    //  获取话题数据
     async getTopics(reset = false) {
       if (!this.syncData.page) {
         this.syncData.page = 1
@@ -76,6 +82,7 @@
 
       this.syncData.include = 'user,category'
       try {
+        // 请求接口，传入参数
         let topicsResponse = await api.request({
           url: this.syncUrl,
           data: this.syncData
@@ -84,13 +91,16 @@
         if (topicsResponse.statusCode === 200) {
           let topics = topicsResponse.data.data
 
+          // 格式化updated_at
           topics.forEach(function (topic) {
             topic.updated_at_diff = util.diffForHumans(topic.updated_at)
           })
+          // 如果传入参数 reset 为true，则覆盖 topics
           this.topics = reset ? topics : this.topics.concat(topics)
 
           let pagination = topicsResponse.data.meta.pagination
 
+          // 根据分页设置是否还有更多数据
           if (pagination.current_page === pagination.total_pages) {
             this.noMoreData = true
           }
@@ -106,6 +116,7 @@
         })
       }
     }
+    // 加载更多
     async loadMore () {
       if (this.noMoreData || this.isLoading) {
         return
@@ -116,6 +127,7 @@
       this.isLoading = false
       this.$apply()
     }
+    // 重新加载
     async reload() {
       this.noMoreData = false
       this.syncData.page = 1

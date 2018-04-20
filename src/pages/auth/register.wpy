@@ -1,4 +1,4 @@
-<style type="less">
+<style lang="less">
 .register-wrap {
   margin-top: 50px;
 }
@@ -14,6 +14,7 @@
 
         <view class="weui-cells__title">Larabbs 手机注册</view>
 
+        <!-- 手机号  -->
         <view class="weui-cells__title {{ errors.phone ? 'weui-cell_warn' : ''}}">手机号</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input {{ errors.phone ? 'weui-cell_warn' : ''}}">
@@ -26,8 +27,9 @@
             </view>
           </view>
         </view>
-        <view wx:if="{{ errors.phone }}" class="weui-cells__tips error-message">{{ errors.phone[0] }}</view>
+        <view wx:if="{{ errors.phone }}" class="weui-cells__tips error-message">{{errors.phone[0]}}</view>
 
+        <!-- 短信验证码  -->
         <view class="weui-cells__title {{ errors.verification_code ? 'weui-cell_warn' : ''}}">短信验证码</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input {{ errors.verification_code ? 'weui-cell_warn' : ''}}">
@@ -39,8 +41,9 @@
             </view>
           </view>
         </view>
-        <view wx:if="{{ errors.verification_code }}" class="weui-cells__tips error-message">{{ errors.verification_code[0] }}</view>
+        <view wx:if="{{ errors.verification_code }}" class="weui-cells__tips error-message">{{errors.verification_code[0]}}</view>
 
+        <!-- 姓名 -->
         <view class="weui-cells__title {{ errors.name ? 'weui-cell_warn' : ''}}">姓名</view>
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input {{ errors.name ? 'weui-cell_warn' : ''}}">
@@ -52,11 +55,12 @@
             </view>
           </view>
         </view>
-        <view wx:if="{{ errors.name }}" class="weui-cells__tips error-message">{{ errors.name[0] }}</view>
+        <view wx:if="{{ errors.name }}" class="weui-cells__tips error-message">{{errors.name[0]}}</view>
 
-        <view class="weui-cells__title {{ errors.password ? 'weui-cell_warn' : '' }}">密码</view>
+        <!-- 密码 -->
+        <view class="weui-cells__title {{ errors.password ? 'weui-cell_warn' : ''}}">密码</view>
         <view class="weui-cells weui-cells_after-title">
-          <view class="weui-cell weui-cell_input {{ errors.password ? 'weui-cell_warn' : '' }}">
+          <view class="weui-cell weui-cell_input {{ errors.password ? 'weui-cell_warn' : ''}}">
             <view class="weui-cell__bd">
               <input class="weui-input" placeholder="请输入密码" name="password" type="password"/>
             </view>
@@ -72,6 +76,7 @@
         </view>
       </form>
 
+      <!-- 验证码输入模态框 -->
       <modal class="modal" hidden="{{ captchaModalHidden }}" no-cancel bindconfirm="sendVerificationCode">
         <view wx:if="{{ errors.captchaValue }}" class="weui-cells__tips error-message">{{ errors.captchaValue[0] }}</view>
         <view class="weui-cell weui-cell_input weui-cell_vcode">
@@ -99,7 +104,7 @@
     data = {
       // 手机号
       phone: null,
-      // // 手机号 input 是否 disabled
+      // 手机号 input 是否 disabled
       phoneDisabled: false,
       // 图片验证码 modal 是否显示
       captchaModalHidden: true,
@@ -107,12 +112,12 @@
       captchaValue: null,
       // 图片验证码 key 及过期时间
       captcha: {},
-      // 短信验证码 key 及过期时间
-      verificationCode: {},
       // 表单错误
-      errors: {}
+      errors: {},
+      // 短信验证码 key 及过期时间
+      verificationCode: {}
     }
-    // 重置注册流程
+    // 重置注册流程，初始化 data 数据
     resetRegister() {
       this.captchaModalHidden = true
       this.phoneDisabled = false
@@ -120,13 +125,23 @@
       this.verificationCode = {}
       this.errors = {}
     }
+    // 表单提交
     async submit (e) {
       this.errors = {}
+      // 检查验证码是否已发送
+      if (!this.verificationCode.key) {
+        wepy.showToast({
+          title: '请发送验证码',
+          icon: 'none',
+          duration: 2000
+        })
+        return false
+      }
       // 检查验证码是否过期
       if (new Date().getTime() > this.verificationCode.expiredAt) {
         wepy.showToast({
           title: '验证码已过期',
-          icon: 'error',
+          icon: 'none',
           duration: 2000
         })
         this.resetRegister()
@@ -166,6 +181,9 @@
           // 设置用户信息
           wepy.setStorageSync('userInfo', registerResponse.data)
 
+          // 获取用户权限
+          this.$parent.getPerms()
+
           wepy.showToast({
             title: '注册成功',
             icon: 'success'
@@ -198,6 +216,7 @@
       }
 
       try {
+        // 调用发送验证码接口，参数为手机号
         let captchaResponse = await api.request({
           url: 'captchas',
           method: 'POST',
@@ -212,7 +231,7 @@
           this.$apply()
         }
 
-        // 记录key和过期时间，打开 modal
+        // 记录 key 和过期时间，打开 modal
         if (captchaResponse.statusCode === 201) {
           this.captcha = {
             key: captchaResponse.data.captcha_key,
@@ -220,6 +239,7 @@
             expiredAt: Date.parse(captchaResponse.data.expired_at)
           }
 
+          // 关闭modal
           this.captchaModalHidden = false
           this.$apply()
         }
@@ -232,11 +252,17 @@
       }
     }
     methods = {
+      // 绑定手机输入
       bindPhoneChange (e) {
         this.phone = e.detail.value
       },
+      // 绑定验证码输入
       bindCaptchaCodeChange (e) {
         this.captchaValue = e.detail.value
+      },
+      // 响应获取图片验证码按钮点击事件
+      async tapCaptchaCode() {
+        this.getCaptchaCode()
       },
       // 发送短信验证码
       async sendVerificationCode() {
@@ -285,8 +311,15 @@
             this.captchaModalHidden = true
             // 手机输入框 disabled
             this.phoneDisabled = true
+            // 清空报错信息
             this.errors = {}
             this.$apply()
+
+            // wepy.showToast({
+            //   title: '发送成功',
+            //   icon: 'success',
+            //   duration: 2000
+            // })
           }
         } catch (err) {
           console.log(err)
@@ -295,10 +328,6 @@
             content: '服务器错误，请联系管理员'
           })
         }
-      },
-      // 响应事件
-      async tapCaptchaCode() {
-        this.getCaptchaCode()
       }
     }
   }

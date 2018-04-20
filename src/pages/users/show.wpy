@@ -1,4 +1,4 @@
-<style type="less">
+<style lang="less">
 .center {
   display: flex;
   justify-content: center;
@@ -27,24 +27,24 @@
       <view class="weui-cells weui-cells_after-title">
         <view class="weui-cell">
           <view class="weui-cell__bd ">
-            <view class="center"><image class="avatar" src="{{ userInfo.avatar }}"/></view>
-            <view class="center">{{ userInfo.name }}</view>
-            <view class="page__desc center" wx:if="{{ userInfo.introduction }}">{{ userInfo.introduction }}</view>
-            <view class="page__desc center" wx:if="{{ userInfo.email }}">邮箱：{{ userInfo.email }}</view>
+            <view class="center"><image class="avatar" src="{{ user.avatar }}"/></view>
+            <view class="center">{{ user.name }}</view>
+            <view class="page__desc center" wx:if="{{ user.introduction }}">{{ user.introduction }}</view>
+            <view class="page__desc center" wx:if="{{ user.email }}">邮箱：{{ user.email }}</view>
             <view class="weui-media-box__info center">
-              <view class="weui-media-box__info__meta">注册于：{{ userInfo.created_at_diff }}</view>
-              <view class="weui-media-box__info__meta weui-media-box__info__meta_extra">最后活跃于：{{ userInfo.last_actived_at_diff }}</view>
+              <view class="weui-media-box__info__meta">注册于：{{ user.created_at_diff }}</view>
+              <view class="weui-media-box__info__meta weui-media-box__info__meta_extra">最后活跃于：{{ user.last_actived_at_diff }}</view>
             </view>
           </view>
         </view>
 
-        <navigator class="weui-cell weui-cell_access user-links" url="/pages/topics/userIndex?user_id={{ userInfo.id }}" open-type="redirect">
+        <navigator class="weui-cell weui-cell_access user-links" url="/pages/topics/userIndex?user_id={{ user.id }}">
           <view class="weui-cell__bd">
             <view class="weui-cell__bd">Ta 的话题</view>
           </view>
           <view class="weui-cell__ft weui-cell__ft_in-access"></view>
         </navigator>
-        <navigator class="weui-cell weui-cell_access" url="/pages/replies/userIndex?user_id={{ userInfo.id }}">
+        <navigator class="weui-cell weui-cell_access" url="/pages/replies/userIndex?user_id={{ user.id }}">
           <view class="weui-cell__bd" url="">
             <view class="weui-cell__bd">Ta 的回复</view>
           </view>
@@ -62,22 +62,26 @@
 
   export default class UserShow extends wepy.page {
     data = {
-      userInfo: null
+      // 用户数据
+      user: null
     }
     async onLoad(options) {
       try {
         let userResponse = await api.request('users/' + options.id)
 
         if (userResponse.statusCode === 200) {
-          this.userInfo = userResponse.data
+          this.user = userResponse.data
 
-          this.userInfo.created_at_diff = util.diffForHumans(this.userInfo.created_at)
-          this.userInfo.last_actived_at_diff = util.diffForHumans(this.userInfo.last_actived_at)
+          // 格式化注册时间
+          this.user.created_at_diff = util.diffForHumans(this.user.created_at)
+          // 格式化最后活跃时间
+          this.user.last_actived_at_diff = util.diffForHumans(this.user.last_actived_at)
 
           this.$apply()
 
+          // 动态设置页面标题
           wepy.setNavigationBarTitle({
-            title: this.userInfo.name + ' 的主页'
+            title: this.user.name + ' 的主页'
           })
         }
       } catch (err) {
@@ -90,9 +94,12 @@
     }
     onShareAppMessage (res) {
       return {
-        title: this.userInfo.name,
-        path: '/pages/users/show?id=' + this.userInfo.id,
-        imageUrl: this.userInfo.avatar,
+        // 标题为用户姓名
+        title: this.user.name,
+        // 路径为用户详情
+        path: '/pages/users/show?id=' + this.user.id,
+        // 图片为用户头像
+        imageUrl: this.user.avatar,
         success: function(res) {
           // 转发成功
           console.log(res)

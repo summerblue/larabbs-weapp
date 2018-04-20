@@ -1,4 +1,4 @@
-<style type="less">
+<style lang="less">
 .content {
   height: 5.3em;
 }
@@ -15,6 +15,7 @@
               </view>
             </view>
           </view>
+        </view>
 
         <view class="weui-btn-area">
           <button class="weui-btn" type="primary" formType="submit">提交</button>
@@ -32,20 +33,24 @@
       navigationBarTitleText: '添加回复'
     }
     data = {
+      // 回复的话题id
       topicId: 0
     }
-    async onLoad(options) {
-      if (!await this.$parent.getCurrentUser()) {
+    onLoad(options) {
+      // 未登录跳转到登录页面
+      if (!this.$parent.checkLogin()) {
         wepy.navigateTo({
           url: '/pages/auth/login'
         })
       }
       this.topicId = options.topic_id
     }
+    // 提交表单
     async submit (e) {
       this.errors = null
 
       let formData = e.detail.value
+      // 如果未填写内容，提示用户
       if (!formData.content) {
         wepy.showToast({
           title: '请填写内容',
@@ -57,6 +62,7 @@
       }
 
       try {
+        // 请求发布回复接口
         let createResponse = await api.authRequest({
           url: 'topics/' + this.topicId + '/replies',
           method: 'POST',
@@ -80,11 +86,13 @@
             this.$apply()
           }
 
+          // 提示发布成功
           wepy.showToast({
             title: '发布成功',
             icon: 'success'
           })
 
+          // 2 秒后返回上一页
           setTimeout(function() {
             wepy.navigateBack()
           }, 2000)
