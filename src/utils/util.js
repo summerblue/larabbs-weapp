@@ -6,6 +6,6 @@ const diffForHumans = (date, format='YYYYMMDD H:mm:ss') => {
   return moment(date, format).fromNow()
 }
 
-module.exports = {
+export default {
   diffForHumans
 }

@@ -164,7 +164,7 @@ const updateFile = async (options = {}) => {
   return response
 }
 
-module.exports = {
+export default {
   request,
   authRequest,
   refreshToken,
