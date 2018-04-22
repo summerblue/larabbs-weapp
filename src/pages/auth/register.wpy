@@ -19,7 +19,7 @@
         <view class="weui-cells weui-cells_after-title">
           <view class="weui-cell weui-cell_input {{ errors.phone ? 'weui-cell_warn' : ''}}">
             <view class="weui-cell__bd">
-              <input disabled="{{ phoneDisabled }}" class="weui-input" placeholder="请输入手机号" @change="bindPhoneChange"/>
+              <input disabled="{{ phoneDisabled }}" class="weui-input" type="number" placeholder="请输入手机号" @input="bindPhoneInput"/>
             </view>
             <view class="weui-cell__ft">
               <icon wx:if="{{ errors.phone }}" type="warn" size="23" color="#E64340"></icon>
@@ -81,7 +81,7 @@
         <view wx:if="{{ errors.captchaValue }}" class="weui-cells__tips error-message">{{ errors.captchaValue[0] }}</view>
         <view class="weui-cell weui-cell_input weui-cell_vcode">
           <view class="weui-cell__bd">
-            <input class="weui-input" placeholder="图片验证码" @change="bindCaptchaCodeChange"/>
+            <input class="weui-input" placeholder="图片验证码" @input="bindCaptchaCodeInput"/>
           </view>
           <view class="weui-cell__ft">
             <image class="weui-vcode-img" @tap="tapCaptchaCode" src="{{ captcha.imageContent }}" style="width: 100px"></image>
@@ -253,11 +253,11 @@
     }
     methods = {
       // 绑定手机输入
-      bindPhoneChange (e) {
+      bindPhoneInput (e) {
         this.phone = e.detail.value
       },
       // 绑定验证码输入
-      bindCaptchaCodeChange (e) {
+      bindCaptchaCodeInput (e) {
         this.captchaValue = e.detail.value
       },
       // 响应获取图片验证码按钮点击事件

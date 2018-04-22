@@ -6,7 +6,7 @@
 <template>
   <view class="page">
     <view class="page__bd login-wrap">
-      <view class="weui-toptips weui-toptips_warn" wx:if="{{ error }}">{{ errorMessage }}</view>
+      <view class="weui-toptips weui-toptips_warn" wx:if="{{ errorMessage }}">{{ errorMessage }}</view>
 
       <view class="weui-cells__title">Larabbs 用户登录</view>
       <view class="weui-cells weui-cells_after-title">
@@ -15,7 +15,7 @@
             <view class="weui-label">用户名</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input" placeholder="手机号或邮箱" @change="bindUsernameChange" />
+            <input class="weui-input" placeholder="手机号或邮箱" @input="bindUsernameInput" />
           </view>
           <view wx:if="{{ error }}" class="weui-cell__ft">
             <icon type="warn" size="23" color="#E64340"></icon>
@@ -26,7 +26,7 @@
             <view class="weui-label">密码</view>
           </view>
           <view class="weui-cell__bd">
-            <input class="weui-input" placeholder="输入密码" @change="bindPasswordChange" />
+            <input class="weui-input" placeholder="输入密码" type="password" @input="bindPasswordInput" />
           </view>
           <view wx:if="{{ error }}" class="weui-cell__ft">
             <icon type="warn" size="23" color="#E64340"></icon>
@@ -65,17 +65,23 @@
     }
     methods = {
       // 绑定用户名 input 变化
-      bindUsernameChange (e) {
+      bindUsernameInput (e) {
         this.username = e.detail.value
       },
       // 绑定密码 input 变化
-      bindPasswordChange (e) {
+      bindPasswordInput (e) {
         this.password = e.detail.value
       },
       // 表单提交
       async submmit() {
         // 提交时重置错误
         this.error = false
+        this.errorMessage = ''
+
+        if (!this.username || !this.password) {
+          this.errorMessage = '请填写账户名或密码'
+          return
+        }
 
         // 获取用户名和密码
         let params = {
