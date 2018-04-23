@@ -21,10 +21,10 @@ export default class ReplyMixin extends wepy.mixin {
     try {
       // 请求话题回复接口
       let repliesResponse = await api.request({
-        url: this.requestUrl,
+        url: this.requestData.url,
         data: {
           page: this.page,
-          include: 'user'
+          include: this.requestData.include || 'user'
         }
       })
 

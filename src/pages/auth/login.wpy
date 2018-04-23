@@ -39,7 +39,7 @@
       </view>
 
       <view class="weui-btn-area">
-        <button class="weui-btn" type="primary" @tap="submmit">登录</button>
+        <button class="weui-btn" type="primary" @tap="submit">登录</button>
       </view>
     </view>
   </view>
@@ -73,7 +73,7 @@
         this.password = e.detail.value
       },
       // 表单提交
-      async submmit() {
+      async submit() {
         // 提交时重置错误
         this.error = false
         this.errorMessage = ''

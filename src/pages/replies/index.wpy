@@ -65,14 +65,14 @@
       navigationBarTitleText: '回复列表'
     }
     data = {
-      requestUrl: '',
+      requestData: {},
       topicId: 0
     }
     mixins = [replyMixin]
     async onLoad(options) {
       this.topicId = options.topic_id
       // 获取 URL 参数中的 话题id
-      this.requestUrl = 'topics/' + options.topic_id + '/replies'
+      this.requestData.url = 'topics/' + options.topic_id + '/replies'
       this.getReplies()
     }
     onShow() {

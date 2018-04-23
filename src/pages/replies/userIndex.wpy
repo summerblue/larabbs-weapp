@@ -45,10 +45,11 @@
     }
     mixins = [replyMixin]
     data = {
-      requestUrl: ''
+      requestData: {}
     }
     async onLoad(options) {
-      this.requestUrl = 'users/' + options.user_id + '/replies'
+      this.requestData.url = 'users/' + options.user_id + '/replies'
+      this.requestData.include = 'user,topic'
       this.getReplies()
     }
   }
