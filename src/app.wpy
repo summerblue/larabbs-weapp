@@ -77,7 +77,7 @@ export default class extends wepy.app {
 
   // 获取当前登录用户信息
   async getCurrentUser () {
-    if (!await this.checkLogin()) {
+    if (!this.checkLogin()) {
       return null
     }
 
