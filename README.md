@@ -11,6 +11,8 @@ LaraBBS 是一个简洁的论坛应用，使用 Laravel5.5 编写而成。一步
 
 <p align="center">
   <img src="https://lccdn.phphub.org/uploads/images/201804/24/3995/0hcN1gWW9M.jpg" width="200" />
+</p>
+<p align="center">
   <img src="https://lccdn.phphub.org/uploads/images/201804/13/3995/9iABfC8yV3.jpeg?imageView2/2/w/1240/h/0" width="600" align=center />
 </p>
 
