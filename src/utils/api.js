@@ -125,7 +125,7 @@ const authRequest = async (options, showLoading = true) => {
 const logout = async (params = {}) => {
   let accessToken = wepy.getStorageSync('access_token')
   // 调用删除 Token 接口，让 Token 失效
-  let logoutResponse = wepy.request({
+  let logoutResponse = await wepy.request({
     url: host + '/' + 'authorizations/current',
     method: 'DELETE',
     header: {
