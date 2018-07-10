@@ -1,5 +1,4 @@
-import wepy from 'wepy';
-import api from '@/utils/api'
+import wepy from 'wepy'
 
 export default class unreadCount extends wepy.mixin {
   data = {

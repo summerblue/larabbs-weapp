@@ -127,7 +127,7 @@
       this.categories = categories
       this.$apply()
     }
-    async onLoad() {
+    onLoad() {
       // 获取分类数据
       this.getCategories()
       // 调用组件的 reload 方法
@@ -143,9 +143,9 @@
       await this.$invoke('topiclist', 'reload')
       wepy.stopPullDownRefresh()
     }
-    async onReachBottom () {
+    onReachBottom () {
       // 调用组件的 loadMore 方法
-      await this.$invoke('topiclist', 'loadMore')
+      this.$invoke('topiclist', 'loadMore')
     }
     methods = {
       // 切换分类列表展示
@@ -153,7 +153,7 @@
         this.categoryOpen = !this.categoryOpen
       },
       // 选择分类重新加载
-      async changeCatgory (id = 0) {
+      changeCatgory (id = 0) {
         this.currentCategory = id ? this.categories.find(category => category.id === id) : {}
         this.categoryOpen = false
         this.$apply()

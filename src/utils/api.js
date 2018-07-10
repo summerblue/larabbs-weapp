@@ -19,8 +19,8 @@ const request = async (options, showLoading = true) => {
   let response = await wepy.request(options)
 
   if (showLoading) {
-	// 隐藏加载中
-	wepy.hideLoading()
+  // 隐藏加载中
+    wepy.hideLoading()
   }
 
   // 服务器异常后给与提示
@@ -88,7 +88,7 @@ const getToken = async (options) => {
   if (accessToken && new Date().getTime() > expiredAt) {
     let refreshResponse = await refreshToken(accessToken)
 
-  // 刷新成功
+    // 刷新成功
     if (refreshResponse.statusCode === 200) {
       accessToken = refreshResponse.data.access_token
     } else {
@@ -172,4 +172,3 @@ export default {
   logout,
   updateFile
 }
-

@@ -39,7 +39,7 @@
       wepy.stopPullDownRefresh()
     }
     // 上拉加载更多
-    async onReachBottom () {
+    onReachBottom () {
       // 调用组件 loadMore 方法
       this.$invoke('topiclist', 'loadMore')
     }

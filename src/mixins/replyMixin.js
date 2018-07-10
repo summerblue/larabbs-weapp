@@ -4,7 +4,7 @@ import api from '@/utils/api'
 
 export default class ReplyMixin extends wepy.mixin {
   config = {
-    enablePullDownRefresh: true,
+    enablePullDownRefresh: true
   }
   data = {
     // 回复数据
