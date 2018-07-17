@@ -61,10 +61,10 @@
 
     <view class="category-list__item-bd {{ categoryOpen ? 'category-list__item-bd_show' : '' }}">
       <view class="weui-cells {{ categoryOpen ? 'weui-cells_show' : '' }}">
-        <view @tap="changeCatgory()" class="weui-cell weui-cell_access {{ !currentCategory.id ? 'category-list__item_selected' : ''}}">
+        <view @tap="changeCategory()" class="weui-cell weui-cell_access {{ !currentCategory.id ? 'category-list__item_selected' : ''}}">
           <view class="weui-cell__bd">话题</view>
         </view>
-        <view @tap="changeCatgory({{ category.id }})" class="weui-cell weui-cell_access {{ currentCategory.id == category.id ? 'category-list__item_selected' : ''}}" wx:for="{{ categories }}" wx:for-item="category" wx:key="id">
+        <view @tap="changeCategory({{ category.id }})" class="weui-cell weui-cell_access {{ currentCategory.id == category.id ? 'category-list__item_selected' : ''}}" wx:for="{{ categories }}" wx:for-item="category" wx:key="id">
           <view class="weui-cell__bd">{{ category.name }}</view>
         </view>
       </view>
@@ -153,7 +153,7 @@
         this.categoryOpen = !this.categoryOpen
       },
       // 选择分类重新加载
-      changeCatgory (id = 0) {
+      changeCategory (id = 0) {
         this.currentCategory = id ? this.categories.find(category => category.id === id) : {}
         this.categoryOpen = false
         this.$apply()
