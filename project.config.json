@@ -10,6 +10,6 @@
 	"compileType": "miniprogram",
 	"appid": "wx756787de07ac71b1",
 	"projectname": "larabbs-weapp",
-	"miniprogramRoot": "./dist",
+	"miniprogramRoot": "dist/",
 	"condition": {}
 }
