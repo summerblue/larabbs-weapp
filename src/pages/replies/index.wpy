@@ -57,7 +57,7 @@
   import wepy from 'wepy'
   import replyMixin from '@/mixins/replyMixin'
 
-  export default class replyIndex extends wepy.page {
+  export default class ReplyIndex extends wepy.page {
     config = {
       // 可以下拉刷新
       enablePullDownRefresh: true,

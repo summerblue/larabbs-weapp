@@ -81,7 +81,7 @@ if (prod) {
       filter: /\.js$/,
       config: {
         find: /__BASE_URL__/g,
-        replace: prod ? "'https://weapp.laravel-china.org/api'" : "'http://larabbs.test/api'"
+        replace: prod ? "'https://weapp.liyu.wiki/api'" : "'http://larabbs.test/api'"
       }
     }
   }

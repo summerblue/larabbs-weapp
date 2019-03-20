@@ -36,7 +36,7 @@
   import util from '@/utils/util'
   import api from '@/utils/api'
 
-  export default class notificationIndex extends wepy.page {
+  export default class NotificationIndex extends wepy.page {
     config = {
       enablePullDownRefresh: true,
       navigationBarTitleText: '通知列表'

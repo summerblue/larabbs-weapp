@@ -38,7 +38,7 @@
   import wepy from 'wepy'
   import replyMixin from '@/mixins/replyMixin'
 
-  export default class replyUserIndex extends wepy.page {
+  export default class ReplyUserIndex extends wepy.page {
     config = {
       enablePullDownRefresh: true,
       navigationBarTitleText: '用户回复列表'
