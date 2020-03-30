@@ -1,0 +1,120 @@
+<style lang="less">
+.login-wrap {
+  margin-top: 90px;
+}
+.weui-toptips {
+    display: block;
+}
+</style>
+<template>
+<div class="page">
+  <div class="page__bd">
+    <div class="page__bd login-wrap">
+      <div class="weui-toptips weui-toptips_warn fadeIn" v-if="errorMessage">{{ errorMessage }}</div>
+      <div class="weui-cells__title">Larabbs 用户登录</div>
+      <div class="weui-cells weui-cells_after-title">
+        <div class="weui-cell weui-cell_input" :class="{'weui-cell_warn': hasError}">
+          <div class="weui-cell__hd">
+            <div class="weui-label">用户名</div>
+          </div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" placeholder="手机号或邮箱" v-model="form.username" />
+          </div>
+          <div v-if="hasError" class="weui-cell__ft">
+            <icon type="warn" size="23" color="#E64340"></icon>
+          </div>
+        </div>
+        <div class="weui-cell weui-cell_input" :class="{'weui-cell_warn': hasError}">
+          <div class="weui-cell__hd">
+            <div class="weui-label">密码</div>
+          </div>
+          <div class="weui-cell__bd">
+            <input class="weui-input" placeholder="输入密码" v-model="form.password" type="password" />
+          </div>
+          <div v-if="hasError" class="weui-cell__ft">
+            <icon type="warn" size="23" color="#E64340"></icon>
+          </div>
+        </div>
+      </div>
+
+      <div class="weui-btn-area">
+        <button class="weui-btn" type="primary" @tap="submit">登录</button>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+<config>
+  {
+    navigationBarTitleText: '登录',
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+  import { login } from '@/api/auth'
+
+  wepy.page({
+    data: {
+      // 用户名
+      form: {},
+      // 是否有错
+      hasError: false,
+      // 错误信息
+      errorMessage: ''
+    },
+    methods: {
+      // 表单提交
+      async submit() {
+        // 提交时重置错误
+        this.hasError = false
+        this.errorMessage = ''
+
+        if (!this.form.username || !this.form.password) {
+          this.hasError = true
+          this.errorMessage = '请填写账户名和密码'
+          return
+        }
+
+        let params = this.form
+        const loginData = await wx.login()
+        params.code = loginData.code
+
+        try {
+          const loginResponse = await login(params)
+
+          const accessToken = loginResponse.data.access_token
+          const accessTokenExpiredAt = new Date().getTime() + loginResponse.data.expires_in * 1000
+
+          wx.setStorageSync('access_token', accessToken)
+          wx.setStorageSync('access_token_expired_at', accessTokenExpiredAt)
+
+          wx.navigateBack()
+
+        } catch(err) {
+          this.hasError = true
+          this.errorMessage = err.response.data.message
+        }
+      }
+    },
+    // 页面打开事件
+    async onShow() {
+      try {
+        const loginData = await wx.login()
+
+        const loginResponse = await login({
+          code: loginData.code
+        })
+
+        const accessToken = loginResponse.data.access_token
+        const accessTokenExpiredAt = new Date().getTime() + loginResponse.data.expires_in * 1000
+
+        wx.setStorageSync('access_token', accessToken)
+        wx.setStorageSync('access_token_expired_at', accessTokenExpiredAt)
+
+        wx.navigateBack()
+
+      } catch(err) {
+      }
+    }
+  })
+</script>
