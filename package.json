@@ -20,7 +20,9 @@
     "@wepy/core": "^2.0.0-alpha.9",
     "@wepy/use-promisify": "^2.0.2",
     "@wepy/x": "^2.0.2",
-    "miniprogram-slide-view": "0.0.3"
+    "lodash": "^4.17.15",
+    "miniprogram-slide-view": "0.0.3",
+    "we-validator": "^2.1.10"
   },
   "devDependencies": {
     "@wepy/cli": "^2.0.0-alpha.20",
