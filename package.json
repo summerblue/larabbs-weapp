@@ -7,7 +7,8 @@
     "dev": "./node_modules/.bin/wepy build --watch",
     "build": "cross-env NODE_ENV=production ./node_modules/.bin/wepy build --no-cache",
     "clean": "rm -rf weapp",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "eslint":"eslint --fix --ext .js,.wpy src"
   },
   "wepy": {
     "module-a": false,

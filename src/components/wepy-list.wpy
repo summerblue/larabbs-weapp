@@ -48,11 +48,11 @@
         this.list.push({id: len + 1, title: 'title_' + len})
       },
       remove (index) {
-        this.$delete(this.list, index);
+        this.$delete(this.list, index)
       }
     },
 
     onLoad () {
     }
-  });
+  })
 </script>

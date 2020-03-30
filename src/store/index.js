@@ -1,4 +1,4 @@
-import Vuex from '@wepy/x';
+import Vuex from '@wepy/x'
 
 export default new Vuex.Store({
   state: {
@@ -6,23 +6,23 @@ export default new Vuex.Store({
   },
   mutations: {
     increment (state) {
-      state.counter++;
+      state.counter++
     },
     decrement (state) {
-      state.counter--;
+      state.counter--
     }
   },
   actions: {
     increment ({ commit }) {
-      commit('increment');
+      commit('increment')
     },
     decrement ({ commit }) {
-      commit('decrement');
+      commit('decrement')
     },
     incrementAsync ({ commit }) {
       setTimeout(() => {
-        commit('increment');
-      }, 1000);
+        commit('increment')
+      }, 1000)
     }
   }
-});
+})
