@@ -2,8 +2,9 @@
 <div class="page">
   <div class="page__bd">
     <div class="weui-panel weui-panel_access">
-      <div class="weui-panel__hd" v-if="loggedIn">
-        已登录
+      <div class="weui-panel__hd" v-if="isLoggedIn">
+        已登录 name: {{ user.name }}
+       <button type="warn" v-on:click="logout">退出登录</button>
       </div>
       <div v-else>
         <a class="weui-cell weui-cell_access" url="/pages/auth/login">
@@ -19,17 +20,22 @@
 <script>
   import wepy from '@wepy/core'
   import store from '@/store'
+  import { mapGetters } from '@wepy/x'
 
   wepy.page({
+    store,
     config: {
       navigationBarTitleText: '我的'
     },
-    data: {
-      loggedIn: false
+    computed: {
+      ...mapGetters(['user','isLoggedIn'])
     },
-    onShow() {
-      if (wx.getStorageSync('access_token')) {
-        this.loggedIn = true
+    methods: {
+      // 退出
+      async logout () {
+        try {
+          await this.$store.dispatch('logout')
+        } catch (err) {}
       }
     }
   })
