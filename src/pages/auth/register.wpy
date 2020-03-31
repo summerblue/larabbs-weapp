@@ -1,0 +1,133 @@
+<style lang="less">
+.register-wrap {
+  margin-top: 90px;
+}
+.error-message {
+  color: #E64340;
+}
+.catpcha-img {
+  height: 40px;
+}
+</style>
+<template>
+<div class="page">
+  <div class="page__bd register-wrap">
+
+    <div class="weui-toptips weui-toptips_warn" v-if="errorMessage">{{ errorMessage }}</div>
+
+    <div class="weui-cells__title">Larabbs 手机注册</div>
+
+    <div class="weui-cells__title {{ errors.phone ? 'weui-cell_warn' : ''}}">手机号</div>
+    <div class="weui-cells weui-cells_after-title">
+      <div class="weui-cell  weui-cell_vcode {{ errors.phone ? 'weui-cell_warn' : ''}}">
+        <div class="weui-cell__bd">
+          <input :disabled="phoneDisabled" class="weui-input" type="number" placeholder="请输入手机号" v-model="form.phone"/>
+        </div>
+        <div class="weui-cell__ft">
+          <icon v-if="errors.phone" type="warn" size="23" color="#E64340"></icon>
+          <div class="weui-vcode-btn" @click="getCaptchaCode">获取验证码</div>
+        </div>
+      </div>
+    </div>
+    <div v-if="errors.phone" class="weui-cells__tips error-message">{{ errors.phone[0] }}</div>
+
+    <div class="weui-btn-area">
+      <button class="weui-btn" type="primary" @tap="submit">注册</button>
+    </div>
+
+    <!-- 验证码输入模态框 -->
+    <modal class="modal" v-if="captchaModalShow" no-cancel bindconfirm="sendVerificationCode">
+      <div v-if="errors.captchaValue" class="weui-cells__tips error-message">{{ errors.captchaValue[0] }}</div>
+      <div class="weui-cell weui-cell_input weui-cell_vcode">
+        <div class="weui-cell__bd">
+          <input class="weui-input" placeholder="图片验证码" v-model="form.captchaValue"/>
+        </div>
+        <div class="weui-cell__ft">
+          <image class="weui-vcode-img catpcha-img" @tap="register" :src="captcha.imageContent" style="width: 100px"></image>
+        </div>
+      </div>
+    </modal>
+
+  </div>
+</div>
+</template>
+<config>
+  {
+    navigationBarTitleText: '注册',
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+  import store from '@/store'
+  import { getCaptcha } from '@/api/auth'
+  import WeValidator from 'we-validator'
+
+  wepy.page({
+    config: {
+      navigationBarTitleText: '注册'
+    },
+    data: {
+      form: {
+        phone: null,
+        captchaValue: null,
+      },
+      // 手机号 input 是否 disabled
+      phoneDisabled: false,
+      // 图片验证码 modal 是否显示
+      captchaModalShow: false,
+      // 图片验证码 key 及过期时间
+      captcha: {},
+      // 表单错误
+      errors: {}
+    },
+    onReady(){
+      this.initValidator()
+    },
+    methods: {
+      initValidator(){
+        this.phoneValidatorInstance = new WeValidator({
+          rules: {
+            phone: {
+              required: true,
+              mobile: true
+            }
+          },
+          messages: {
+            phone: {
+              required: '请输入手机号',
+              mobile: '手机号格式不正确'
+            }
+          },
+          onMessage: (data) => {
+            this.$set(this.errors, data.name, [data.msg])
+          }
+        })
+      },
+      // 响应获取图片验证码按钮点击事件
+      async getCaptchaCode() {
+        this.errors = {}
+        if(!this.phoneValidatorInstance.checkData(this.form)) {
+          return
+        }
+
+        try {
+          // 调用发送验证码接口，参数为手机号
+          let captchaResponse = await getCaptcha(this.form.phone)
+
+          this.captcha = {
+            key: captchaResponse.data.captcha_key,
+            imageContent: captchaResponse.data.captcha_image_content,
+            expiredAt: Date.parse(captchaResponse.data.expired_at)
+          }
+
+          // 打开modal
+          this.captchaModalShow = true
+        } catch (err) {
+          if (err.response.statusCode === 422) {
+            this.errors = err.response.data.errors
+          }
+        }
+      }
+    }
+  })
+</script>
