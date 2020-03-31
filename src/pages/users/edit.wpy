@@ -1,0 +1,147 @@
+<style lang="less">
+  .introduction {
+    height: 3.3em;
+  }
+  .error-message {
+    color: #E64340;
+  }
+</style>
+<template>
+  <div class="page">
+    <div class="page__bd">
+      <!-- 填写姓名 -->
+      <div class="weui-cells__title" :class="{'weui-cell_warn': errors.name}">姓名</div>
+      <div class="weui-cells weui-cells_after-title">
+        <div class="weui-cell weui-cell_input" :class="{'weui-cell_warn': errors.name}">
+          <div class="weui-cell__bd">
+            <input class="weui-input" placeholder="请输入姓名" name="name" v-model="form.name" />
+          </div>
+          <div v-if="errors.name" class="weui-cell__ft">
+            <icon type="warn" size="23" color="#E64340"></icon>
+          </div>
+        </div>
+      </div>
+      <!-- 姓名错误信息 -->
+      <div v-if="errors.name" class="weui-cells__tips error-message">{{ errors.name[0] }}</div>
+
+      <!-- 填写邮箱 -->
+      <div class="weui-cells__title" :class="{'weui-cell_warn': errors.email}">邮箱</div>
+      <div class="weui-cells weui-cells_after-title">
+        <div class="weui-cell weui-cell_input" :class="{'weui-cell_warn': errors.email}">
+          <div class="weui-cell__bd">
+            <input class="weui-input" placeholder="请输入邮箱" name="email" v-model="form.email" />
+          </div>
+          <div v-if="errors.email" class="weui-cell__ft">
+            <icon type="warn" size="23" color="#E64340"></icon>
+          </div>
+        </div>
+      </div>
+      <!-- 邮箱错误信息 -->
+      <div v-if="errors.email" class="weui-cells__tips error-message">{{ errors.email[0] }}</div>
+
+      <!-- 填写简介 -->
+      <div class="weui-cells__title" :class="{'weui-cell_warn': errors.introduction}">个人简介</div>
+      <div class="weui-cells weui-cells_after-title" :class="{'weui-cell_warn': errors.introduction}">
+        <div class="weui-cell">
+          <div class="weui-cell__bd">
+            <textarea class="weui-textarea introduction" placeholder="请输入简介" name="introduction" v-model="form.introduction" />
+          </div>
+          <div v-if="errors.introduction" class="weui-cell__ft">
+            <icon type="warn" size="23" color="#E64340"></icon>
+          </div>
+        </div>
+      </div>
+      <!-- 简介错误信息 -->
+      <div v-if="errors.introduction" class="weui-cells__tips error-message">{{ errors.introduction[0] }}</div>
+
+      <!-- 提交表单 -->
+      <div class="weui-btn-area">
+        <button class="weui-btn" type="primary" @tap="submit">修改</button>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import wepy from '@wepy/core'
+  import store from '@/store'
+  import { mapGetters } from '@wepy/x'
+  import WeValidator from 'we-validator'
+
+  wepy.page({
+    store,
+    config: {
+      navigationBarTitleText: '修改个人信息'
+    },
+    data: {
+      form: {},
+      // 错误信息
+      errors: {}
+    },
+    computed: {
+      // 用户信息
+      ...mapGetters(['user'])
+    },
+    onShow() {
+      this.form = this.user
+    },
+    onReady() {
+      this.initValidator()
+    },
+    methods: {
+      initValidator() {
+        // 实例化
+        this.validatorInstance = new WeValidator({
+          multiCheck: true,
+          rules: {
+            name: {
+              required: true
+            },
+            email: {
+              email: true
+            }
+          },
+          messages: {
+            name: {
+              required: '请输入姓名'
+            },
+            email: {
+              email: '邮箱格式不正确'
+            },
+          },
+          onMessage: (data) => {
+            let errors = {}
+            Object.keys(data).map(function(key) {
+              errors[key] = [data[key].msg]
+            })
+
+            this.errors = errors
+          }
+        })
+      },
+      // 表单提交
+      async submit () {
+        this.errors = {}
+        if (!this.validatorInstance.checkData(this.form)) {
+          return
+        }
+
+        try {
+          await this.$store.dispatch('updateUser', this.form)
+
+          wx.showToast({
+            title: '修改成功',
+            icon: 'success',
+            duration: 2000
+          })
+
+        } catch (err) {
+          // 设置报错信息
+          if (err.response.statusCode === 422) {
+            this.errors = err.response.data.errors
+          }
+        }
+      }
+    }
+  })
+</script>

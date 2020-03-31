@@ -111,7 +111,7 @@
     },
     data: {
       form: {
-        phone: null,
+        phone: null
       },
       captchaValue: null,
       // 手机号 input 是否 disabled
@@ -125,7 +125,7 @@
         // 短信验证码 key 及过期时间
       verificationCode: {}
     },
-    onReady(){
+    onReady() {
       this.initValidator()
     },
     methods: {
@@ -195,7 +195,7 @@
       // 响应获取图片验证码按钮点击事件
       async getCaptchaCode() {
         this.errors = {}
-        if(!this.phoneValidatorInstance.checkData(this.form)) {
+        if (!this.phoneValidatorInstance.checkData(this.form)) {
           return
         }
 
@@ -244,7 +244,6 @@
           this.captchaModalShow = false
           // 手机输入框 disabled
           this.phoneDisabled = true
-
         } catch (err) {
           // 验证码错误提示
           this.$set(this.errors, 'captchaValue', err.response.data.message)
@@ -291,7 +290,7 @@
           // 跳转到我的页面
           setTimeout(async () => {
             wx.switchTab({
-              url: '/pages/user'
+              url: '/pages/users/me'
             })
           }, 2000)
         } catch (err) {

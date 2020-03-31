@@ -50,4 +50,3 @@ export function register(data) {
     data: data
   })
 }
-

@@ -22,7 +22,7 @@
     <div class="page__bd" >
       <div class="weui-cells weui-cells_after-title">
         <!-- 已登录 -->
-        <a class="weui-cell weui-cell_access" v-if="isLoggedIn" url>
+        <a class="weui-cell weui-cell_access" v-if="isLoggedIn" url="/pages/users/edit">
           <div class="weui-cell__hd avatar-wrap">
             <image class="avatar" :src="user.avatar"/>
           </div>
@@ -80,7 +80,7 @@
   wepy.page({
     store,
     computed: {
-      ...mapGetters(['user','isLoggedIn'])
+      ...mapGetters(['user', 'isLoggedIn'])
     },
     methods: {
       // 退出

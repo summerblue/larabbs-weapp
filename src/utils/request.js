@@ -69,8 +69,7 @@ const authRequest = async (url, options = {}, showLoading = true) => {
   return await request(url, options, showLoading)
 }
 
-
 export {
  request,
- authRequest,
+ authRequest
 }

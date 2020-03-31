@@ -7,4 +7,3 @@ export default new Vuex.Store({
     user
   }
 })
-
