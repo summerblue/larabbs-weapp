@@ -44,4 +44,10 @@ export function getVerificationCode(key, code) {
   })
 }
 
+export function register(data) {
+  return request('weapp/users', {
+    method: 'post',
+    data: data
+  })
+}
 
