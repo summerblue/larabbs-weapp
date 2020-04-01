@@ -1,0 +1,118 @@
+<style lang="less">
+  .weui-media-box__info__meta {
+    margin: 0;
+    font-size: 12px;
+  }
+  .topic-info {
+    margin-top: 5px;
+  }
+  .topic-title {
+    white-space: normal;
+    font-size: 14px;
+  }
+  .avatar {
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 50px;
+    height: 50px;
+  }
+  .reply-count {
+    background-color: #d8d8d8;
+    float: right;
+  }
+</style>
+<template>
+<div class="page">
+  <div class="page__bd">
+    <div class="weui-panel weui-panel_access">
+      <div class="weui-panel__bd">
+        <div v-for="topic in topics" :key="topic.id">
+          <a url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+            <div class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+              <image class="weui-media-box__thumb avatar" :src="topic.user.avatar" />
+            </div>
+            <div class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+              <div class="weui-media-box__title topic-title">{{ topic.title }}</div>
+
+              <div class="weui-media-box__info topic-info">
+                <div class="weui-media-box__info__meta">{{ topic.category.name }} • </div>
+                <div class="weui-media-box__info__meta">{{ topic.user.name }} • </div>
+                <div class="weui-media-box__info__meta">{{ topic.updated_at }}</div>
+              </div>
+            </div>
+            <div class="weui-badge reply-count">{{ topic.reply_count }}</div>
+          </a>
+        </div>
+        <div class="weui-loadmore weui-loadmore_line" v-if="noMoreData">
+          <div class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+<config>
+  {
+    enablePullDownRefresh: true,
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+  import { getTopics } from '@/api/topic'
+
+  wepy.page({
+    data: {
+      // 话题数据
+      topics: [],
+      // 当前分页
+      page: 1,
+      // 是否还有更多数据
+      noMoreData: false,
+      // 是否在加载中
+      isLoading: false
+    },
+    async onLoad() {
+      this.loadTopics()
+    },
+    async onPullDownRefresh() {
+      this.page = 1
+      await this.loadTopics(true)
+      wx.stopPullDownRefresh()
+    },
+    async onReachBottom () {
+      // 如果没有更多内容，直接返回
+      if (this.noMoreData || this.isLoading) {
+        return
+      }
+
+      this.isLoading = true
+      this.page += 1
+
+      await this.loadTopics()
+
+      this.isLoading = false
+    },
+    methods: {
+      // 获取话题数据
+      async loadTopics(reset = false) {
+        // 请求话题列表接口
+        const topicsResponse = await getTopics({
+          page: this.page,
+          include: 'user,category'
+        })
+
+        // 将数据合并到 this.topics
+        this.topics = reset ? topicsResponse.data.data : this.topics.concat(topicsResponse.data.data)
+
+        const pagination = topicsResponse.data.meta
+
+        // 根据分页设置是否还有更多数据
+        if (pagination.current_page === pagination.last_page) {
+          this.noMoreData = true
+        }
+      }
+    }
+
+  })
+</script>

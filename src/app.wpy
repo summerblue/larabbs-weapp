@@ -27,7 +27,7 @@ wepy.app({
 <config>
 {
   pages: [
-    'pages/index',
+    'pages/topics/index',
     'pages/users/me',
     'pages/users/edit',
     'pages/auth/login',
@@ -41,7 +41,7 @@ wepy.app({
   },
   tabBar: {
     list: [{
-      pagePath: 'pages/index',
+      pagePath: 'pages/topics/index',
       text: '首页',
       iconPath: 'assets/images/index.png',
       selectedIconPath: 'assets/images/index_selected.png'
