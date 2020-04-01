@@ -77,7 +77,7 @@
       </div>
     </div>
 
-    <topic-list :topics="topics" :no-more-data ="noMoreData"></topic-list>
+    <topic-list :topics="resourceData" :no-more-data ="noMoreData"></topic-list>
   </div>
 </div>
 </template>
@@ -92,8 +92,10 @@
 <script>
   import wepy from '@wepy/core'
   import { getTopics, getCategories } from '@/api/topic'
+  import listRefresh from '@/mixins/list-refresh.js'
 
   wepy.page({
+    mixins: [ listRefresh ],
     data: {
       // 分类数据
       categories: [],
@@ -101,14 +103,6 @@
       currentCategory: {},
       // 是否显示分类
       categoryOpen: false,
-      // 话题数据
-      topics: [],
-      // 当前分页
-      page: 1,
-      // 是否还有更多数据
-      noMoreData: false,
-      // 是否在加载中
-      isLoading: false
     },
     computed: {
       currentCategoryId() {
@@ -119,32 +113,11 @@
       }
     },
     async onLoad() {
-      this.loadTopics()
       this.loadCategories()
-    },
-    async onPullDownRefresh() {
-      this.page = 1
-      this.noMoreData = false
-      await this.loadTopics(true)
-      wx.stopPullDownRefresh()
-    },
-    async onReachBottom () {
-      // 如果没有更多内容，直接返回
-      if (this.noMoreData || this.isLoading) {
-        return
-      }
-
-      this.isLoading = true
-      this.page += 1
-
-      await this.loadTopics()
-
-      this.isLoading = false
+      this.loadData()
     },
     methods: {
-      // 获取话题数据
-      async loadTopics(reset = false) {
-
+      async fetchData() {
         let params = {
           page: this.page,
           include: 'user,category'
@@ -155,26 +128,17 @@
         }
 
         // 请求话题列表接口
-        const topicsResponse = await getTopics(params)
-
-        // 将数据合并到 this.topics
-        this.topics = reset ? topicsResponse.data.data : this.topics.concat(topicsResponse.data.data)
-
-        const pagination = topicsResponse.data.meta
-
-        // 根据分页设置是否还有更多数据
-        if (pagination.current_page === pagination.last_page) {
-          this.noMoreData = true
-        }
+        return getTopics(params)
       },
       async loadCategories() {
         // 从缓存中获取分类数据
         let categories = wx.getStorageSync('categories')
 
         if (!categories) {
-          let categoriesResponse = await getCategories()
+          const categoriesResponse = await getCategories()
+          categories = categoriesResponse.data.data
 
-          wx.setStorageSync('categories', categoriesResponse.data.data)
+          wx.setStorageSync('categories', categories)
         }
 
         this.categories = categories
