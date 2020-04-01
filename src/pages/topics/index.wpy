@@ -91,6 +91,7 @@
 </config>
 <script>
   import wepy from '@wepy/core'
+  import eventHub from '@/common/eventHub'
   import { getTopics, getCategories } from '@/api/topic'
   import listRefresh from '@/mixins/list-refresh.js'
 
@@ -115,6 +116,12 @@
     async onLoad() {
       this.loadCategories()
       this.loadData()
+
+      eventHub.$on('topic-deleted', (topic) => {
+        this.page = 1
+        this.noMoreData = false
+        this.loadData(true)
+      })
     },
     methods: {
       async fetchData() {

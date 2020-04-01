@@ -1,4 +1,4 @@
-import { request } from '@/utils/request'
+import { request, authRequest } from '@/utils/request'
 
 export function getTopics(data) {
   return request('topics', {
@@ -22,3 +22,9 @@ export function getUserTopics(userId, data) {
   })
 }
 
+export function deleteTopic(id, data) {
+  return authRequest('topics/' + id, {
+    method: 'DELETE',
+    data: data
+  })
+}
