@@ -1,0 +1,78 @@
+<style lang="less">
+.page{
+    background-color: #FFFFFF;
+}
+.avatar-wrap {
+  position: relative;
+  margin-right: 10px;
+}
+.avatar {
+  width: 50px;
+  height: 50px;
+  display: block;
+  border-radius: 50%;
+}
+.topic-title {
+  padding: 15px;
+}
+</style>
+<template>
+  <div class="page">
+    <div class="page__bd">
+      <div class="weui-cells weui-cells_after-title">
+        <a class="weui-cell">
+          <div class="weui-cell__hd avatar-wrap">
+            <image class="avatar" :src="topic.user.avatar"/>
+          </div>
+          <div class="weui-cell__bd">
+            <div>{{ topic.user.name }}</div>
+            <div class="page__desc">{{ topic.user.introduction }}</div>
+          </div>
+        </a>
+      </div>
+      <div class="topic-title">
+        <div class="page__title">{{ topic.title }}</div>
+        <div class="weui-media-box__info topic-info">
+          <div class="weui-media-box__info__meta">{{ topic.category.name }} • </div>
+          <div class="weui-media-box__info__meta"><datetime-diff :datetime="topic.updated_at"></datetime-diff> • </div>
+          <div class="weui-media-box__info__meta">{{ topic.reply_count }} 次回复</div>
+        </div>
+      </div>
+      <div class="weui-article">
+        <rich-text :nodes="topic.body"></rich-text>
+      </div>
+    </div>
+  </div>
+</template>
+<config>
+  {
+    navigationBarTitleText: '话题详情',
+    usingComponents: {
+      "datetime-diff": "~@/components/datetime-diff"
+    }
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+  import { getTopic } from '@/api/topic'
+
+  wepy.page({
+    data: {
+      // 话题数据
+      topic: null
+    },
+    methods: {
+      // 获取话题数据
+      async loadTopic(id) {
+        const topicResponse = await getTopic(id, {
+          include: 'user,category'
+        })
+
+        this.topic = topicResponse.data
+      }
+    },
+    onLoad(options) {
+      this.loadTopic(options.id)
+    }
+  })
+</script>
