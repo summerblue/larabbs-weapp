@@ -1,0 +1,73 @@
+<style lang="less">
+  .weui-media-box__info__meta {
+    margin: 0;
+    font-size: 12px;
+  }
+  .topic-info {
+    margin-top: 5px;
+  }
+  .topic-title {
+    white-space: normal;
+    font-size: 14px;
+  }
+  .avatar {
+    padding: 4px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    width: 50px;
+    height: 50px;
+  }
+  .reply-count {
+    background-color: #d8d8d8;
+    float: right;
+  }
+</style>
+<template>
+  <div class="weui-panel weui-panel_access">
+    <div class="weui-panel__bd">
+      <div v-for="topic in topics" :key="topic.id">
+        <a url="/pages/topics/show?id={{topic.id}}" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+          <div class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+            <image class="avatar" :src="topic.user.avatar" />
+          </div>
+          <div class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+            <div class="weui-media-box__title topic-title">{{ topic.title }}</div>
+
+            <div class="weui-media-box__info topic-info">
+              <div class="weui-media-box__info__meta">{{ topic.category.name }} • </div>
+              <div class="weui-media-box__info__meta">{{ topic.user.name }} • </div>
+              <div class="weui-media-box__info__meta">
+                <datetime-diff :datetime="topic.updated_at"></datetime-diff>
+              </div>
+            </div>
+          </div>
+          <div class="weui-badge reply-count">{{ topic.reply_count }}</div>
+        </a>
+      </div>
+      <div class="weui-loadmore weui-loadmore_line" v-if="noMoreData">
+        <div class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</div>
+      </div>
+    </div>
+  </div>
+</template>
+<config>
+  {
+    usingComponents: {
+      "datetime-diff": "~@/components/datetime-diff"
+    }
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+
+  wepy.component({
+    options: {
+      styleIsolation: 'apply-shared',
+    },
+    props: {
+      // 父页面传入，请求参数
+      topics: Array,
+      noMoreData: Boolean
+    }
+  })
+</script>

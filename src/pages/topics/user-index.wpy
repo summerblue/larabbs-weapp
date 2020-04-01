@@ -1,0 +1,75 @@
+<template>
+  <div class="page__bd">
+    <topic-list :topics="topics" :no-more-data ="noMoreData"></topic-list>
+  </div>
+</template>
+<config>
+  {
+    navigationBarTitleText: 'Ta 发布的话题',
+    enablePullDownRefresh: true,
+    usingComponents: {
+      "topic-list": "~@/components/topic-list"
+    }
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+  import { getUserTopics } from '@/api/topic'
+
+  wepy.page({
+    data: {
+      page: 1,
+      // 话题数据
+      topics: [],
+      // 有没有更多数据
+      noMoreData: false,
+      // 是否在加载中
+      isLoading: false,
+      // 用户 id
+      userId: 0
+    },
+    async onLoad(options) {
+      this.userId = options.id
+      this.loadTopics()
+    },
+    async onPullDownRefresh() {
+      this.page = 1
+      this.noMoreData = false
+      await this.loadTopics(true)
+      wx.stopPullDownRefresh()
+    },
+    async onReachBottom () {
+      // 如果没有更多内容，直接返回
+      if (this.noMoreData || this.isLoading) {
+        return
+      }
+
+      this.isLoading = true
+      this.page += 1
+
+      await this.loadTopics()
+
+      this.isLoading = false
+    },
+    methods: {
+      async loadTopics(reset = false) {
+
+        // 请求话题列表接口
+        const topicsResponse = await getUserTopics(this.userId, {
+          page: this.page,
+          include: 'user,category'
+        })
+
+        // 将数据合并到 this.topics
+        this.topics = reset ? topicsResponse.data.data : this.topics.concat(topicsResponse.data.data)
+
+        const pagination = topicsResponse.data.meta
+
+        // 根据分页设置是否还有更多数据
+        if (pagination.current_page === pagination.last_page) {
+          this.noMoreData = true
+        }
+      }
+    }
+  })
+</script>
