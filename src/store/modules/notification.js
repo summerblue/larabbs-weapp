@@ -23,6 +23,7 @@ const actions = {
     commit('setUnreadCount', statsResponse.data.unread_count)
   },
   async readNotifications ({ commit }, params = {}) {
+    console.log('hererer')
     const statsResponse = await readNotifications()
 
     commit('setUnreadCount', 0)
