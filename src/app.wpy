@@ -28,6 +28,18 @@ wepy.app({
   methods: {
     async updateUnreadCount() {
       await this.$store.dispatch('updateUnreadCount')
+    },
+    can(targetPerm) {
+      if (!this.$store.getters.isLoggedIn) {
+        return false
+      }
+
+      // 判断权限中是否有目标权限
+      if (this.$store.getters.perms.find(perm => perm.name === targetPerm)) {
+        return true
+      }
+
+      return false
     }
   }
 })

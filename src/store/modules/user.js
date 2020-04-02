@@ -9,17 +9,19 @@ const getDefaultState = () => {
     user: auth.getUser(),
     accessToken: auth.getToken(),
     accessTokenExpiredAt: auth.getTokenExpiredAt()
+    perms: auth.getPerms()
   }
 }
 
 const state = getDefaultState()
 
 // 定义 getters
-var getters = {
+const getters = {
   isLoggedIn: state => !isEmpty(state.accessToken),
   user: state => state.user,
   accessToken: state => state.accessToken,
-  accessTokenExpiredAt: state => state.accessTokenExpiredAt
+  accessTokenExpiredAt: state => state.accessTokenExpiredAt,
+  perms: state => state.perms
 }
 
 // 定义 actions
@@ -48,6 +50,14 @@ const actions = {
 
     commit('setUser', userResponse.data)
     auth.setUser(userResponse.data)
+
+    dispatch('getPerms')
+  },
+  async getPerms ({ commit }) {
+    const permResponse = await getPerms()
+
+    commit('setPerms', permResponse.data)
+    auth.setPerms(permResponse.data)
   },
   async refresh ({ dispatch, commit, state }, params = {}) {
     const refreshResponse = await refresh(state.accessToken, {}, false)

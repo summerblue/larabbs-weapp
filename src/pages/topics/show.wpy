@@ -113,7 +113,7 @@
           return false
         }
         // 当前用户是话题的发布者
-        return this.user.id === this.topic.user_id
+        return (this.user.id === this.topic.user_id) || this.$app.can('manage_contents')
       }
     },
     methods: {
