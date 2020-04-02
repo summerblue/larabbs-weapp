@@ -14,7 +14,7 @@
 </config>
 <script>
   import wepy from '@wepy/core'
-  import eventHub from '@/common/eventHub
+  import eventHub from '@/common/eventHub'
   import { getUserTopics } from '@/api/topic'
   import listRefresh from '@/mixins/list-refresh.js'
 

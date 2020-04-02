@@ -5,3 +5,16 @@ export function getReplies(topicId, data) {
     data: data
   })
 }
+
+export function getUserReplies(userId, data) {
+  return request('users/'+userId+'/replies', {
+    data: data
+  })
+}
+
+export function createReply(topicId, data) {
+  return authRequest('topics/'+ topicId +'/replies', {
+    method: 'POST',
+    data: data
+  })
+}

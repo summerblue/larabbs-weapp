@@ -1,0 +1,28 @@
+<style lang="less" scoped>
+.create-reply {
+  width: 40px;
+  height: 40px;
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+}
+</style>
+
+<template>
+<a url="/pages/replies/create?topic_id={{ topicId }}">
+  <image src="/assets/images/reply.png" class="create-reply" />
+</a>
+</template>
+
+<script>
+  import wepy from '@wepy/core'
+
+  wepy.component({
+    options: {
+      styleIsolation: 'apply-shared',
+    },
+    props: {
+      topicId: Number
+    }
+  })
+</script>
