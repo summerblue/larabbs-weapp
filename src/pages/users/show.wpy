@@ -17,9 +17,6 @@
   font-size: 13px;
   color: #888888;
 }
-.user-links {
-  margin-top: 20px;
-}
 </style>
 <template>
   <div class="page">
@@ -42,18 +39,18 @@
           </div>
         </div>
 
-        <navigator class="weui-cell weui-cell_access user-links" url="/pages/topics/userIndex?id={{ user.id }}">
+        <a class="weui-cell weui-cell_access" url="/pages/topics/userIndex?id={{ user.id }}">
           <div class="weui-cell__bd">
             <div class="weui-cell__bd">Ta 的话题</div>
           </div>
           <div class="weui-cell__ft weui-cell__ft_in-access"></div>
-        </navigator>
-        <navigator class="weui-cell weui-cell_access" url="">
+        </a>
+        <a class="weui-cell weui-cell_access" url="/pages/topics/user-index?id={{ user.id }}">
           <div class="weui-cell__bd" url="">
             <div class="weui-cell__bd">Ta 的回复</div>
           </div>
           <div class="weui-cell__ft weui-cell__ft_in-access"></div>
-        </navigator>
+        </a>
       </div>
     </div>
   </div>
