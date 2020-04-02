@@ -1,6 +1,6 @@
 import wepy from '@wepy/core'
 import { login, logout, refresh, register } from '@/api/auth'
-import { getCurrentUser, updateUser } from '@/api/user'
+import { getCurrentUser, updateUser, getPerms } from '@/api/user'
 import * as auth from '@/utils/auth'
 import isEmpty from 'lodash/isEmpty'
 
@@ -8,7 +8,7 @@ const getDefaultState = () => {
   return {
     user: auth.getUser(),
     accessToken: auth.getToken(),
-    accessTokenExpiredAt: auth.getTokenExpiredAt()
+    accessTokenExpiredAt: auth.getTokenExpiredAt(),
     perms: auth.getPerms()
   }
 }
@@ -56,8 +56,8 @@ const actions = {
   async getPerms ({ commit }) {
     const permResponse = await getPerms()
 
-    commit('setPerms', permResponse.data)
-    auth.setPerms(permResponse.data)
+    commit('setPerms', permResponse.data.data)
+    auth.setPerms(permResponse.data.data)
   },
   async refresh ({ dispatch, commit, state }, params = {}) {
     const refreshResponse = await refresh(state.accessToken, {}, false)
