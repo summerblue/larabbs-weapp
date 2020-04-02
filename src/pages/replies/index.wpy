@@ -28,7 +28,7 @@
     },
     async onLoad(options) {
       // 获取 URL 参数中的 话题id
-      this.topicId = options.topic_id
+      this.topicId = options.id
       this.loadData()
 
       eventHub.$on('reply-created', (...args) => {

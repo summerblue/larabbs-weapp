@@ -164,7 +164,7 @@
         this.page = 1
 
         // 调用组件的 reload 方法
-        this.loadTopics(true)
+        this.loadData(true)
       }
     }
   })

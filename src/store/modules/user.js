@@ -88,6 +88,9 @@ const mutations = {
   setUser(state, user) {
     state.user = user
   },
+  setPerms(state, perms) {
+    state.perms = perms
+  },
   setToken(state, tokenPayload) {
     state.accessToken = tokenPayload.access_token
     state.accessTokenExpiredAt = new Date().getTime() + tokenPayload.expires_in * 1000
