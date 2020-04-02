@@ -116,6 +116,14 @@
         return (this.user.id === this.topic.user_id) || this.$app.can('manage_contents')
       }
     },
+    onShareAppMessage () {
+      return {
+        // 标题是话题标题
+        title: this.topic.title,
+        // 路径为话题详情路径
+        path: '/pages/topics/show?id=' + this.topic.id,
+      }
+    },
     methods: {
       // 获取话题数据
       async loadTopic(id) {

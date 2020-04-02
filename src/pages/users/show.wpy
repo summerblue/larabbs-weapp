@@ -81,6 +81,16 @@
       wx.setNavigationBarTitle({
         title: this.user.name + ' 的主页'
       })
+    },
+    onShareAppMessage () {
+      return {
+        // 标题为用户姓名
+        title: this.user.name,
+        // 路径为用户详情
+        path: '/pages/users/show?id=' + this.user.id,
+        // 图片为用户头像
+        imageUrl: this.user.avatar,
+      }
     }
   })
 </script>
