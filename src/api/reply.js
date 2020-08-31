@@ -7,21 +7,20 @@ export function getReplies(topicId, data) {
 }
 
 export function getUserReplies(userId, data) {
-  return request('users/'+userId+'/replies', {
+  return request('users/' + userId + '/replies', {
     data: data
   })
 }
 
 export function createReply(topicId, data) {
-  return authRequest('topics/'+ topicId +'/replies', {
+  return authRequest('topics/' + topicId + '/replies', {
     method: 'POST',
     data: data
   })
 }
 
 export function deleteReply(topicId, replyId) {
-  return authRequest('topics/' + topicId +'/replies/' + replyId, {
-    method: 'DELETE',
+  return authRequest('topics/' + topicId + '/replies/' + replyId, {
+    method: 'DELETE'
   })
 }
-

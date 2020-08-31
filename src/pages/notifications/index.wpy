@@ -45,8 +45,8 @@
 <script>
   import wepy from '@wepy/core'
   import store from '@/store'
-  import { mapActions } from '@wepy/x';
-  import listRefresh from '@/mixins/list-refresh.js'
+  import { mapActions } from '@wepy/x'
+import listRefresh from '@/mixins/list-refresh.js'
   import { getNotifications } from '@/api/notification'
 
   wepy.page({

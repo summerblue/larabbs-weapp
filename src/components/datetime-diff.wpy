@@ -8,12 +8,12 @@
   wepy.component({
     props: {
       // 父页面传入，需要格式化的时间
-      datetime: String,
+      datetime: String
     },
     computed: {
       formatDatetime: function() {
         return diffForHumans(this.datetime)
       }
-    },
+    }
   })
 </script>

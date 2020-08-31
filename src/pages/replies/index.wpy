@@ -35,15 +35,15 @@
         this.page = 1
         this.noMoreData = false
         this.loadData(true)
-      });
+      })
 
       eventHub.$on('reply-deleted', (reply) => {
         this.resourceData = this.resourceData.filter((r) => r.id !== reply.id)
-      });
+      })
     },
     methods: {
       fetchData() {
-        return  getReplies(this.topicId, {
+        return getReplies(this.topicId, {
           page: this.page,
           include: 'user'
         })

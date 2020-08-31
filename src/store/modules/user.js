@@ -75,7 +75,6 @@ const actions = {
     commit('resetState')
   },
   async updateUser ({ commit }, params = {}) {
-
     const editResponse = await updateUser(params)
 
     commit('setUser', editResponse.data)

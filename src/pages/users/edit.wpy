@@ -123,7 +123,7 @@
             },
             email: {
               email: '邮箱格式不正确'
-            },
+            }
           },
           onMessage: (data) => {
             let errors = {}
@@ -150,7 +150,6 @@
             icon: 'success',
             duration: 2000
           })
-
         } catch (err) {
           // 设置报错信息
           if (err.response.statusCode === 422) {
@@ -164,15 +163,15 @@
 
         // try {
           // 获取选择的图片
-          let avatar = image.tempFilePaths[0]
+        let avatar = image.tempFilePaths[0]
 
           // 调用上传图片接口
-          let imageResponse = await updateAvatar(avatar)
+        let imageResponse = await updateAvatar(avatar)
 
           // 小程序上传结果没有做 JSON.parse，需要手动处理
-          let responseData = JSON.parse(imageResponse.data)
+        let responseData = JSON.parse(imageResponse.data)
 
-          this.form = Object.assign({}, this.form, {'avatar': responseData.path, 'avatar_image_id': responseData.id})
+        this.form = Object.assign({}, this.form, {'avatar': responseData.path, 'avatar_image_id': responseData.id})
         // } catch (err) {}
       }
     }

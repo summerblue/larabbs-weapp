@@ -10,15 +10,15 @@
 import wepy from '@wepy/core'
 import eventHub from './common/eventHub'
 import vuex from '@wepy/x'
-import promisify  from '@wepy/use-promisify';
+import promisify from '@wepy/use-promisify'
 
 wepy.use(vuex)
-wepy.use(promisify);
+wepy.use(promisify)
 
 wepy.app({
   store: require('./store').default,
   async onLaunch() {
-    this.$store = this.$options.store;
+    this.$store = this.$options.store
     this.updateUnreadCount()
 
     setInterval(() => {

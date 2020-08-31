@@ -107,7 +107,7 @@
       // 当前的分类
       currentCategory: {},
       // 是否显示分类
-      categoryOpen: false,
+      categoryOpen: false
     },
     computed: {
       ...mapGetters([ 'unreadCount']),

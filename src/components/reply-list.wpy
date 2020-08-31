@@ -44,7 +44,7 @@
 
   wepy.component({
     options: {
-      styleIsolation: 'apply-shared',
+      styleIsolation: 'apply-shared'
     },
     props: {
       // 父页面传入，请求参数

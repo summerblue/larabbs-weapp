@@ -19,7 +19,7 @@
 
   wepy.component({
     options: {
-      styleIsolation: 'apply-shared',
+      styleIsolation: 'apply-shared'
     },
     props: {
       topicId: Number

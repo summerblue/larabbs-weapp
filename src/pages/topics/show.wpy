@@ -121,7 +121,7 @@
         // 标题是话题标题
         title: this.topic.title,
         // 路径为话题详情路径
-        path: '/pages/topics/show?id=' + this.topic.id,
+        path: '/pages/topics/show?id=' + this.topic.id
       }
     },
     methods: {
@@ -157,7 +157,7 @@
 
         // 2 秒后返回上一页
         setTimeout(function() {
-          eventHub.$emit('topic-deleted', this.topic);
+          eventHub.$emit('topic-deleted', this.topic)
           wx.navigateBack()
         }, 2000)
       }
@@ -167,7 +167,7 @@
 
       eventHub.$on('reply-created', (...args) => {
         this.loadTopic(options.id)
-      });
+      })
     }
   })
 </script>

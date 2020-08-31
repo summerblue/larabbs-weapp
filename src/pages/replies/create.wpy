@@ -78,7 +78,7 @@
 
         // 2 秒后返回上一页
         setTimeout(function() {
-          eventHub.$emit('reply-created', createResponse.data);
+          eventHub.$emit('reply-created', createResponse.data)
           wx.navigateBack()
         }, 2000)
       }

@@ -17,7 +17,8 @@
 			"ignore": [],
 			"disablePlugins": [],
 			"outputPath": ""
-		}
+		},
+		"useCompilerModule": false
 	},
 	"compileType": "miniprogram",
 	"appid": "wx756787de07ac71b1",

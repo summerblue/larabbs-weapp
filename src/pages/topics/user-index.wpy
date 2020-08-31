@@ -36,8 +36,7 @@
     },
     methods: {
       async fetchData() {
-
-        // 请求用户话题列表接口
+      // 请求用户话题列表接口
         return getUserTopics(this.userId, {
           page: this.page,
           include: 'user,category'

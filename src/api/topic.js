@@ -17,7 +17,7 @@ export function getTopic(id, data) {
 }
 
 export function getUserTopics(userId, data) {
-  return request('users/'+userId+'/topics', {
+  return request('users/' + userId + '/topics', {
     data: data
   })
 }
