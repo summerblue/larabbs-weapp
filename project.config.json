@@ -1,30 +1,13 @@
 {
-	"description": "A WePY project",
-	"setting": {
-		"urlCheck": false,
-		"es6": false,
-		"postcss": false,
-		"minified": false,
-		"newFeature": true,
-		"coverView": true,
-		"autoAudits": false,
-		"showShadowRootInWxmlPanel": false,
-		"scopeDataCheck": false,
-		"checkInvalidKey": true,
-		"checkSiteMap": true,
-		"uploadWithSourceMap": true,
-		"babelSetting": {
-			"ignore": [],
-			"disablePlugins": [],
-			"outputPath": ""
-		},
-		"useCompilerModule": false
-	},
-	"compileType": "miniprogram",
-	"appid": "wx756787de07ac71b1",
-	"projectname": "larabbs",
-	"miniprogramRoot": "weapp/",
-	"simulatorType": "wechat",
-	"simulatorPluginLibVersion": {},
-	"condition": {}
+  "description": "A WePY project",
+  "setting": {
+    "urlCheck": true,
+    "es6": false,
+    "postcss": false,
+    "minified": false
+  },
+  "compileType": "miniprogram",
+  "appid": "wx756787de07ac71b1",
+  "projectname": "larabbs",
+  "miniprogramRoot": "./weapp"
 }
