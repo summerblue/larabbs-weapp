@@ -1,4 +1,8 @@
 <style lang="less">
+@import (css) './assets/style/app.wxss';
+.page{
+  background-color: #FFFFFF;
+}
 </style>
 
 <script>

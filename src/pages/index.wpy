@@ -1,11 +1,48 @@
 <template>
-  <view class="container">
-    首页话题列表
-  </view>
+<div class="page">
+  <div class="page__bd">
+    <div class="weui-panel weui-panel_access">
+      <div class="weui-panel__hd">话题列表</div>
+      <div class="weui-panel__bd">
+        <div v-for="topic in topics">
+          <a url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+            <div class="weui-media-box__hd weui-media-box__hd_in-appmsg">
+              <image class="weui-media-box__thumb" src="https://cdn.learnku.com/uploads/avatars/3995_1516760409.jpg?imagediv2/1/w/200/h/200" />
+            </div>
+            <div class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+              <div class="weui-media-box__title">{{ topic.title }}</div>
+              <div class="weui-media-box__desc">{{ topic.body }}</div>
+            </div>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 </template>
 
 <script>
   import wepy from '@wepy/core'
 
-  wepy.page({})
+  wepy.page({
+    data: {
+      topics: [{
+        id: 1,
+        title: '测试1',
+        body: 'larabbs 测试内容1'
+      }, {
+        id: 2,
+        title: '测试2',
+        body: 'larabbs 测试内容2'
+      }, {
+        id: 3,
+        title: '测试3',
+        body: 'larabbs 测试内容3'
+      }, {
+        id: 4,
+        title: '测试4',
+        body: 'larabbs 测试内容4'
+      }]
+    }
+  })
 </script>
