@@ -5,15 +5,15 @@ module.exports = {
   wpyExt: '.wpy',
   eslint: true,
   cliLogs: !prod,
-  static: ['static'],
+  static: ['./src/assets'],
   build: {
   },
   resolve: {
     alias: {
-      counter: path.join(__dirname, 'src/components/counter'),
-      '@': path.join(__dirname, 'src')
+      counter: path.join(__dirname,'src/components/counter'),
+      '@': path.join(__dirname,'src')
     },
-    aliasFields: ['wepy', 'weapp'],
+    aliasFields: ['wepy','weapp'],
     modules: ['node_modules']
   },
   compilers: {
