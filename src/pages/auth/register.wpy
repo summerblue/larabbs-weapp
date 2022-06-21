@@ -59,7 +59,7 @@
 <script>
   import wepy from '@wepy/core'
   import store from '@/store'
-  import { getCaptcha } from '@/api/auth'
+  import { getCaptcha, getVerificationCode } from '@/api/auth'
   import WeValidator from 'we-validator'
 
   wepy.page({
@@ -77,7 +77,9 @@
       // 图片验证码 key 及过期时间
       captcha: {},
       // 表单错误
-      errors: {}
+      errors: {},
+      // 短信验证码 key 及过期时间
+      verificationCode: {}
     },
     onReady(){
       this.initValidator()
@@ -125,6 +127,40 @@
           if (err.response.statusCode === 422) {
             this.errors = err.response.data.errors
           }
+        }
+      },
+      // 发送短信验证码
+      async sendVerificationCode() {
+        if (!this.captchaValue) {
+          this.$set(this.errors, 'captchaValue', ['请输入图片验证码'])
+          return false
+        }
+
+        // 检查验证码是否过期，重置流程
+        if (new Date().getTime() > new Date(this.captcha.expiredAt).getTime()) {
+          this.$set(this.errors, 'captchaValue', ['请输入图片验证码'])
+          this.getCaptchaCode()
+          return false
+        }
+
+        try {
+          let codeResponse = await getVerificationCode(this.captcha.key, this.captchaValue)
+
+          // 记录 key 和 过期时间
+          this.verificationCode = {
+            key: codeResponse.data.key,
+            expiredAt: Date.parse(codeResponse.data.expired_at)
+          }
+
+          // 关闭modal
+          this.captchaModalShow = false
+          // 手机输入框 disabled
+          this.phoneDisabled = true
+
+        } catch (err) {
+          // 验证码错误提示
+          this.$set(this.errors, 'captchaValue', err.response.data.message)
+          this.getCaptchaCode()
         }
       }
     }
