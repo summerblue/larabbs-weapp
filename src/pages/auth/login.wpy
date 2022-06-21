@@ -41,7 +41,6 @@
         如果你还没有 Larabbs 用户可以
         <a url="/pages/auth/register">注册新用户</a>
       </div>
-
       <div class="weui-btn-area">
         <button class="weui-btn" type="primary" @tap="submit">登录</button>
       </div>
