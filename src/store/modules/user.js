@@ -1,7 +1,8 @@
 import wepy from '@wepy/core'
-import {login} from '@/api/auth'
+import {login,logout,refresh} from '@/api/auth'
 import * as auth from '@/utils/auth'
 import isEmpty from 'lodash/isEmpty'
+import {getCurrentUser} from '@/api/user'
 
 const getDefaultState = () => {
   return {
@@ -31,6 +32,29 @@ const actions = {
 
     commit('setToken',authResponse.data)
     auth.setToken(authResponse.data)
+
+    dispatch('getUser')
+  },
+  async getUser({dispatch,commit}) {
+    const userResponse = await getCurrentUser()
+
+    commit('setUser',userResponse.data)
+    auth.setUser(userResponse.data)
+  },
+  async refresh({dispatch,commit,state},params = {}) {
+    const refreshResponse = await refresh(state.accessToken,{},false)
+
+    commit('setToken',refreshResponse.data)
+    auth.setToken(refreshResponse.data)
+
+    dispatch('getUser')
+  },
+  async logout({commit,state}) {
+    await logout(state.accessToken)
+
+    // 清空 storage
+    auth.logout()
+    commit('resetState')
   }
 }
 
@@ -42,6 +66,9 @@ const mutations = {
   setToken(state,tokenPayload) {
     state.accessToken = tokenPayload.access_token
     state.accessTokenExpiredAt = new Date().getTime() + tokenPayload.expires_in * 1000
+  },
+  resetState: (state) => {
+    Object.assign(state,getDefaultState())
   }
 }
 

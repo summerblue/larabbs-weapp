@@ -6,3 +6,21 @@ export function login(data) {
     data: data
   })
 }
+
+export function refresh(token) {
+  return request('authorizations/current',{
+    method: 'put',
+    header: {
+      'Authorization': 'Bearer ' + token
+    }
+  })
+}
+
+export function logout(token) {
+  return request('authorizations/current',{
+    method: 'delete',
+    header: {
+      'Authorization': 'Bearer ' + token
+    }
+  })
+}
