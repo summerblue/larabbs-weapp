@@ -13,28 +13,33 @@
       <div class="weui-toptips weui-toptips_warn fadeIn" v-if="errorMessage">{{ errorMessage }}</div>
       <div class="weui-cells__title">Larabbs 用户登录</div>
       <div class="weui-cells weui-cells_after-title">
-        <div class="weui-cell weui-cell_input" :class="{'weui-cell_warn': hasError}">
+        <div class="weui-cell weui-cell_input" :class="{'weui-cell_warn': errors.username}">
           <div class="weui-cell__hd">
             <div class="weui-label">用户名</div>
           </div>
           <div class="weui-cell__bd">
             <input class="weui-input" placeholder="手机号或邮箱" v-model="form.username" />
           </div>
-          <div v-if="hasError" class="weui-cell__ft">
+          <div v-if="errors.username" class="weui-cell__ft">
             <icon type="warn" size="23" color="#E64340"></icon>
           </div>
         </div>
-        <div class="weui-cell weui-cell_input" :class="{'weui-cell_warn': hasError}">
+        <div class="weui-cell weui-cell_input" :class="{'weui-cell_warn': errors.password}">
           <div class="weui-cell__hd">
             <div class="weui-label">密码</div>
           </div>
           <div class="weui-cell__bd">
             <input class="weui-input" placeholder="输入密码" v-model="form.password" type="password" />
           </div>
-          <div v-if="hasError" class="weui-cell__ft">
+          <div v-if="errors.password" class="weui-cell__ft">
             <icon type="warn" size="23" color="#E64340"></icon>
           </div>
         </div>
+      </div>
+
+      <div class="weui-cells__tips">
+        如果你还没有 Larabbs 用户可以
+        <a url="/pages/auth/register">注册新用户</a>
       </div>
 
       <div class="weui-btn-area">
@@ -51,47 +56,63 @@
 </config>
 <script>
   import wepy from '@wepy/core'
-  import { login } from '@/api/auth'
+  import store from '@/store'
+  import WeValidator from 'we-validator'
 
   wepy.page({
+    store,
     data: {
       // 用户名
       form: {},
       // 是否有错
-      hasError: false,
+      errors: {},
       // 错误信息
       errorMessage: ''
     },
+    onReady() {
+      this.initValidator()
+    },
     methods: {
+      initValidator() {
+        // 实例化
+        this.validatorInstance = new WeValidator({
+          rules: {
+            username: {
+              required: true
+            },
+            password: {
+              required: true,
+              minlength: 6
+            }
+          },
+          messages: {
+            username: {
+              required: '请输入用户名'
+            },
+            password: {
+              required: '请填写密码',
+              minlength: '密码最少 6 位数'
+            }
+          },
+          onMessage: (data) => {
+            this.$set(this.errors, data.name, [data.msg])
+            this.errorMessage = data.msg
+          }
+        })
+      },
       // 表单提交
       async submit() {
+        this.error = {}
         // 提交时重置错误
-        this.hasError = false
-        this.errorMessage = ''
-
-        if (!this.form.username || !this.form.password) {
-          this.hasError = true
-          this.errorMessage = '请填写账户名和密码'
+        if (!this.validatorInstance.checkData(this.form)) {
           return
         }
 
-        let params = this.form
-        const loginData = await wx.login()
-        params.code = loginData.code
-
         try {
-          const loginResponse = await login(params)
-
-          const accessToken = loginResponse.data.access_token
-          const accessTokenExpiredAt = new Date().getTime() + loginResponse.data.expires_in * 1000
-
-          wx.setStorageSync('access_token', accessToken)
-          wx.setStorageSync('access_token_expired_at', accessTokenExpiredAt)
+          await this.$store.dispatch('login', this.form)
 
           wx.navigateBack()
-
-        } catch(err) {
-          this.hasError = true
+        } catch (err) {
           this.errorMessage = err.response.data.message
         }
       }
@@ -99,24 +120,9 @@
     // 页面打开事件
     async onShow() {
       try {
-	      // 获取微信登录 code
-        const loginData = await wx.login()
-
-		    // 请求登录接口
-        const loginResponse = await login({
-          code: loginData.code
-        })
-
-		    //如果找到code对应的用户则保存 token 和过期时间，然后返回
-        const accessToken = loginResponse.data.access_token
-        const accessTokenExpiredAt = new Date().getTime() + loginResponse.data.expires_in * 1000
-
-        wx.setStorageSync('access_token', accessToken)
-        wx.setStorageSync('access_token_expired_at', accessTokenExpiredAt)
-
+        await this.$store.dispatch('login')
         wx.navigateBack()
-
-      } catch(err) {
+      } catch (err) {
       }
     }
   })
