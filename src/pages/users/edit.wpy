@@ -5,10 +5,26 @@
   .error-message {
     color: #E64340;
   }
+
+  .avatar {
+    width: 80px;
+    height: 80px;
+    display: block;
+    border-radius: 50%;
+  }
+  .avatar-wrap {
+    margin-top: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
 </style>
 <template>
   <div class="page">
     <div class="page__bd">
+      <div class="avatar-wrap">
+        <image class="avatar" :src="form.avatar" @tap="uploadAvatar"/>
+      </div>
       <!-- 填写姓名 -->
       <div class="weui-cells__title" :class="{'weui-cell_warn': errors.name}">姓名</div>
       <div class="weui-cells weui-cells_after-title">
@@ -64,6 +80,7 @@
 
 <script>
   import wepy from '@wepy/core'
+   import { updateAvatar } from '@/api/user'
   import store from '@/store'
   import { mapGetters } from '@wepy/x'
   import WeValidator from 'we-validator'
@@ -141,6 +158,24 @@
             this.errors = err.response.data.errors
           }
         }
+      },
+      async uploadAvatar () {
+        // 选择头像图片
+        let image = await wepy.wx.chooseImage({count: 1})
+
+        try {
+          // 获取选择的图片
+          let avatar = image.tempFilePaths[0]
+
+          // 调用上传图片接口
+          let imageResponse = await updateAvatar(avatar)
+
+          // 小程序上传结果没有做 JSON.parse，需要手动处理
+          let responseData = JSON.parse(imageResponse.data)
+
+          this.form = Object.assign({}, this.form, {'avatar': responseData.path, 'avatar_image_id': responseData.id})
+
+        } catch (err) {}
       }
     }
   })
