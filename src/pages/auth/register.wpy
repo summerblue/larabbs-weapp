@@ -291,7 +291,7 @@
           // 跳转到我的页面
           setTimeout(async () => {
             wx.switchTab({
-              url: '/pages/user'
+              url: '/pages/user/me'
             })
           }, 2000)
         } catch (err) {
