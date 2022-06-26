@@ -21,6 +21,7 @@
     "@wepy/x": "^2.0.2",
     "lodash": "^4.17.21",
     "miniprogram-slide-view": "0.0.3",
+    "moment": "^2.29.3",
     "we-validator": "^2.1.16"
   },
   "devDependencies": {
