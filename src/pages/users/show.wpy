@@ -1,0 +1,86 @@
+<style lang="less">
+.center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+.avatar {
+  width: 80px;
+  height: 80px;
+  display: block;
+  border-radius: 50%;
+}
+.logout {
+  margin-top: 30px;
+}
+.introduction {
+  font-size: 13px;
+  color: #888888;
+}
+</style>
+<template>
+  <div class="page">
+    <div class="page__bd" >
+      <div class="weui-cells weui-cells_after-title">
+        <div class="weui-cell">
+          <div class="weui-cell__bd ">
+            <div class="center"><image class="avatar" src="{{ user.avatar }}"/></div>
+            <div class="center">{{ user.name }}</div>
+            <div class="page__desc center" v-if="user.introduction">{{ user.introduction }}</div>
+            <div class="page__desc center" v-if="user.email">邮箱：{{ user.email }}</div>
+            <div class="weui-media-box__info center">
+              <div class="weui-media-box__info__meta">
+                注册于：<datetime-diff :datetime="user.created_at"></datetime-diff>
+              </div>
+              <div class="weui-media-box__info__meta weui-media-box__info__meta_extra">
+                最后活跃于：<datetime-diff :datetime="user.last_actived_at"></datetime-diff>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <a class="weui-cell weui-cell_access" url="/pages/topics/user-index?id={{ user.id }}">
+          <div class="weui-cell__bd">
+            <div class="weui-cell__bd">Ta 的话题</div>
+          </div>
+          <div class="weui-cell__ft weui-cell__ft_in-access"></div>
+        </a>
+        <a class="weui-cell weui-cell_access" url="">
+          <div class="weui-cell__bd" url="">
+            <div class="weui-cell__bd">Ta 的回复</div>
+          </div>
+          <div class="weui-cell__ft weui-cell__ft_in-access"></div>
+        </a>
+      </div>
+    </div>
+  </div>
+</template>
+<config>
+  {
+    usingComponents: {
+      "datetime-diff": "~@/components/datetime-diff"
+    }
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+  import { getUser } from '@/api/user'
+
+  wepy.page({
+    data: {
+      // 用户数据
+      user: null
+    },
+    async onLoad(options) {
+
+      const userResponse = await getUser(options.id)
+
+      this.user = userResponse.data
+
+      // 动态设置页面标题
+      wx.setNavigationBarTitle({
+        title: this.user.name + ' 的主页'
+      })
+    }
+  })
+</script>

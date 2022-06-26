@@ -20,7 +20,7 @@
   <div class="page">
     <div class="page__bd">
       <div class="weui-cells weui-cells_after-title">
-        <a class="weui-cell">
+        <a open-type="redirect" class="weui-cell weui-cell_access" url="/pages/users/show?id={{ topic.user.id }}">
           <div class="weui-cell__hd avatar-wrap">
             <image class="avatar" :src="topic.user.avatar"/>
           </div>
@@ -28,6 +28,8 @@
             <div>{{ topic.user.name }}</div>
             <div class="page__desc">{{ topic.user.introduction }}</div>
           </div>
+          <!-- 向右的箭头 -->
+          <div class="weui-cell__ft weui-cell__ft_in-access"></div>
         </a>
       </div>
       <div class="topic-title">
