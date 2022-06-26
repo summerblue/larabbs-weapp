@@ -1,0 +1,87 @@
+<style lang="less">
+.content {
+  height: 5.3em;
+}
+</style>
+<template>
+  <div class="page__bd">
+    <div class="weui-cells__title">评论内容</div>
+    <div class="weui-cells weui-cells_after-title">
+      <div class="weui-cell">
+        <div class="weui-cell__bd">
+          <textarea class="weui-textarea content" placeholder="请输入评论内容" v-model="content"></textarea>
+        </div>
+      </div>
+    </div>
+
+    <div class="weui-btn-area">
+      <button class="weui-btn" type="primary" @tap="submit">提交</button>
+    </div>
+  </div>
+</template>
+<config>
+  {
+    navigationBarTitleText: '添加回复',
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+  import store from '@/store'
+  import { mapGetters } from '@wepy/x'
+  import { createReply } from '@/api/reply'
+  import eventHub from '@/common/eventHub'
+
+  wepy.page({
+    store,
+    computed: {
+      // 用户信息
+      ...mapGetters(['isLoggedIn'])
+    },
+    data: {
+      // 回复的话题id
+      topicId: 0,
+      content: ''
+    },
+    onLoad(options) {
+      // 未登录跳转到登录页面
+      if (!this.isLoggedIn) {
+        wx.navigateTo({
+          url: '/pages/auth/login'
+        })
+      }
+      this.topicId = options.topic_id
+    },
+    methods: {
+      // 提交表单
+      async submit () {
+        // 如果未填写内容，提示用户
+        if (!this.content) {
+          wx.showToast({
+            title: '请填写内容',
+            icon: 'none',
+            duration: 2000
+          })
+
+          return
+        }
+
+        // 请求发布回复接口
+        let createResponse = await createReply(this.topicId, {
+          content: this.content
+        })
+
+        // 提示发布成功
+        wx.showToast({
+          title: '发布成功',
+          icon: 'success'
+        })
+
+        // 2 秒后返回上一页
+        setTimeout(function() {
+          eventHub.$emit('reply-created', createResponse.data);
+          wx.navigateBack()
+        }, 2000)
+      }
+    }
+  })
+</script>

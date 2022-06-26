@@ -53,9 +53,8 @@
       </div>
       <div class="weui-article">
         <rich-text :nodes="topic.body" bindtap="tap"></rich-text>
-		<button v-if="canDelete" @tap="deleteTopic" class="weui-btn weui-btn_mini delete-button" type="default" size="mini">删除</button>
+        <button v-if="canDelete" @tap="deleteTopic" class="weui-btn weui-btn_mini delete-button" type="default" size="mini">删除</button>
       </div>
-
       <!-- 话题回复 -->
       <div class="weui-panel weui-panel_access" v-if="topic.reply_count">
         <div class="weui-panel__hd">回复 ({{ topic.reply_count }})</div>
@@ -81,13 +80,15 @@
         </div>
       </div>
     </div>
+    <reply-create-link :topicId="topic.id"></reply-create-link>
   </div>
 </template>
 <config>
   {
     navigationBarTitleText: '话题详情',
     usingComponents: {
-      "datetime-diff": "~@/components/datetime-diff"
+      "datetime-diff": "~@/components/datetime-diff",
+      "reply-create-link": "~@/components/reply-create-link"
     }
   }
 </config>
@@ -156,6 +157,10 @@
     },
     onLoad(options) {
       this.loadTopic(options.id)
+
+      eventHub.$on('reply-created', (...args) => {
+        this.loadTopic(options.id)
+      });
     }
   })
 </script>
