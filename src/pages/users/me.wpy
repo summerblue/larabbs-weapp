@@ -54,7 +54,7 @@
           </div>
           <div class="weui-cell__ft weui-cell__ft_in-access"></div>
         </a>
-        <a class="weui-cell weui-cell_access" url="">
+        <a class="weui-cell weui-cell_access" url="/pages/replies/user-index?id={{ user.id }}">
           <div class="weui-cell__bd" url="">
             <div class="weui-cell__bd">我的回复</div>
           </div>

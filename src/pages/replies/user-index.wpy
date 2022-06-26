@@ -5,7 +5,7 @@
 </template>
 <config>
   {
-    navigationBarTitleText: '回复列表',
+    navigationBarTitleText: '用户回复列表',
     enablePullDownRefresh: true,
     usingComponents: {
       "reply-list": "~@/components/reply-list"
@@ -14,23 +14,28 @@
 </config>
 <script>
   import wepy from '@wepy/core'
-  import { getReplies } from '@/api/reply'
+  import eventHub from '@/common/eventHub'
+  import { getUserReplies } from '@/api/reply'
   import listRefresh from '@/mixins/list-refresh.js'
 
   wepy.page({
     mixins: [ listRefresh ],
     data: {
       // 话题 id
-      topicId: 0
+      userId: 0
     },
     async onLoad(options) {
       // 获取 URL 参数中的 话题id
-      this.topicId = options.topic_id
+      this.userId = options.id
       this.loadData()
+
+      eventHub.$on('reply-deleted', (reply) => {
+        this.resourceData = this.resourceData.filter((r) => r.id !== reply.id)
+      })
     },
     methods: {
       fetchData() {
-        return  getReplies(this.topicId, {
+        return getUserReplies(this.userId, {
           page: this.page,
           include: 'user'
         })
