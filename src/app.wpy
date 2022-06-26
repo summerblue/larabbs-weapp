@@ -15,12 +15,19 @@ wepy.use(vuex)
 wepy.use(promisify)
 
 wepy.app({
-  onLaunch() {
-    wepy.wx.login().then(res => {
-      console.log('login: ', res)
-    })
+  store: require('./store').default,
+  async onLaunch() {
+    this.$store = this.$options.store;
+    this.updateUnreadCount()
+
+    setInterval(() => {
+      this.updateUnreadCount()
+    }, 60000)
   },
   methods: {
+    async updateUnreadCount() {
+      await this.$store.dispatch('updateUnreadCount')
+    }
   }
 })
 </script>
