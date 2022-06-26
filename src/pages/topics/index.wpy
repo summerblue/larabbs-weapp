@@ -102,7 +102,7 @@
     <div class="weui-panel weui-panel_access">
       <div class="weui-panel__bd">
         <div v-for="topic in topics" :key="topic.id">
-          <a url="" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+          <a url="/pages/topics/show?id={{topic.id}}" class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
             <div class="weui-media-box__hd weui-media-box__hd_in-appmsg">
               <image class="avatar" :src="topic.user.avatar" />
             </div>
