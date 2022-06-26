@@ -1,0 +1,69 @@
+<template>
+<div class="page">
+  <div class="page__bd">
+    <div class="weui-panel weui-panel_access">
+      <div class="weui-panel__bd">
+        <div v-for="notification in resourceData" :key="notification.id">
+          <div class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+            <a class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{ notification.data.user_id }}">
+              <image class="notificationer-avatar weui-media-box__thumb" src="{{ notification.data.user_avatar }}" />
+            </a>
+            <div class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+
+              <a class="weui-media-box__title" url="/pages/topics/show?id={{ notification.data.topic_id }}">
+                <div style="display: inline-block; vertical-align: middle">{{ notification.data.user_name }}</div>
+                评论了
+                <div style="display: inline-block; vertical-align: middle">{{ notification.data.topic_title }}</div>
+              </a>
+
+              <div class="weui-media-box__desc"><rich-text nodes="{{ notification.data.reply_content }}" bindtap="tap"></rich-text></div>
+              <div class="weui-media-box__info">
+                <div class="weui-media-box__info__meta">
+                  <datetime-diff :datetime="notification.created_at"></datetime-diff>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="weui-loadmore weui-loadmore_line" v-if="noMoreData">
+          <div class="weui-loadmore__tips weui-loadmore__tips_in-line">没有更多数据</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</template>
+<config>
+  {
+    navigationBarTitleText: '通知列表',
+    enablePullDownRefresh: true,
+    usingComponents: {
+      "datetime-diff": "~@/components/datetime-diff"
+    }
+  }
+</config>
+<script>
+  import wepy from '@wepy/core'
+  import listRefresh from '@/mixins/list-refresh.js'
+  import { getNotifications } from '@/api/notification'
+  import store from '@/store'
+  import { mapActions } from '@wepy/x';
+
+  wepy.page({
+    store,
+    mixins: [ listRefresh ],
+    async onLoad() {
+      this.loadData()
+      this.readNotifications()
+    },
+    methods: {
+      ...mapActions(['readNotifications']),
+      // 获取消息
+      fetchData() {
+        return getNotifications({
+          page: this.page
+        })
+      }
+    }
+  })
+</script>
