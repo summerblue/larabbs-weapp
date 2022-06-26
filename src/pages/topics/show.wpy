@@ -18,6 +18,14 @@
 .delete-button {
   margin-top: 15px;
 }
+.replyer-avatar {
+  padding: 4px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.reply-diff {
+  background-color: #d8d8d8;
+}
 </style>
 <template>
   <div class="page">
@@ -47,6 +55,31 @@
         <rich-text :nodes="topic.body" bindtap="tap"></rich-text>
 		<button v-if="canDelete" @tap="deleteTopic" class="weui-btn weui-btn_mini delete-button" type="default" size="mini">删除</button>
       </div>
+
+      <!-- 话题回复 -->
+      <div class="weui-panel weui-panel_access" v-if="topic.reply_count">
+        <div class="weui-panel__hd">回复 ({{ topic.reply_count }})</div>
+        <div class="weui-panel__bd">
+          <div v-for="reply in topic.top_replies" :key="reply.id">
+            <div class="weui-media-box weui-media-box_appmsg" hover-class="weui-cell_active">
+              <a class="weui-media-box__hd weui-media-box__hd_in-appmsg" url="/pages/users/show?id={{ reply.user_id }}">
+                <image class="replyer-avatar weui-media-box__thumb" :src="reply.user.avatar" />
+              </a>
+              <div class="weui-media-box__bd weui-media-box__bd_in-appmsg">
+                <div class="weui-media-box__title">{{ reply.user.name }}</div>
+                <div class="weui-media-box__desc"><rich-text nodes="{{ reply.content }}" bindtap="tap"></rich-text></div>
+                <div class="weui-media-box__desc"><datetime-diff :datetime="reply.created_at"></datetime-diff></div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="weui-panel__ft">
+          <a class="weui-cell weui-cell_access weui-cell_link" url="/pages/replies/index?topic_id={{ topic.id }}">
+            <div class="weui-cell__bd">查看全部回复</div>
+            <div class="weui-cell__ft weui-cell__ft_in-access"></div>
+          </a>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -63,6 +96,7 @@
   import store from '@/store'
   import { mapGetters } from '@wepy/x'
   import { getTopic, deleteTopic } from '@/api/topic'
+  import eventHub from '@/common/eventHub'
 
   wepy.page({
     store,
@@ -107,17 +141,18 @@
 
         // 2 秒后返回上一页
         setTimeout(function() {
+          eventHub.$emit('topic-deleted', this.topic);
           wx.navigateBack()
         }, 2000)
       },
       // 获取话题数据
       async loadTopic(id) {
         const topicResponse = await getTopic(id, {
-          include: 'user,category'
+          include: 'user,category,topReplies.user'
         })
 
         this.topic = topicResponse.data
-      }
+      },
     },
     onLoad(options) {
       this.loadTopic(options.id)
