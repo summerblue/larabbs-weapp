@@ -18,3 +18,9 @@ export function createReply(topicId, data) {
     data: data
   })
 }
+
+export function deleteReply(topicId, replyId) {
+  return authRequest('topics/' + topicId +'/replies/' + replyId, {
+    method: 'DELETE',
+  })
+}

@@ -1,0 +1,67 @@
+<style lang="less" scoped>
+  .reply-delete {
+    width: 20px;
+    height: 20px;
+  }
+</style>
+<template>
+  <div>
+    <image v-if="canDelete" class="reply-delete" src="/assets/images/trash.png" @tap="deleteReply"/>
+  </div>
+</template>
+
+<script>
+  import wepy from '@wepy/core'
+  import store from '@/store'
+  import { mapGetters } from '@wepy/x'
+  import eventHub from '@/common/eventHub'
+  import { deleteReply } from '@/api/reply'
+
+  wepy.component({
+    store,
+    options: {
+      styleIsolation: 'apply-shared',
+    },
+    props: {
+      reply: Object
+    },
+    computed: {
+      ...mapGetters(['user', 'isLoggedIn']),
+      canDelete: function() {
+        if (!this.reply || !this.isLoggedIn) {
+          return false
+        }
+
+        return this.user.id === this.reply.user_id
+      }
+    },
+    methods: {
+      async deleteReply() {
+
+        // 确认是否删除
+        let res = await wepy.wx.showModal({
+          title: '确认删除',
+          content: '您确认删除该回复吗',
+          confirmText: '删除',
+          cancelText: '取消'
+        })
+
+        // 点击取消后返回
+        if (!res.confirm) {
+          return
+        }
+
+        // 调用接口删除回复
+        const deleteResponse = await deleteReply(this.reply.topic_id, this.reply.id)
+
+        wx.showToast({
+          title: '删除成功',
+          icon: 'success',
+          duration: 2000
+        })
+
+        eventHub.$emit('reply-deleted', this.reply);
+      }
+    }
+  })
+</script>

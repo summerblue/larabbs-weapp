@@ -22,6 +22,7 @@
             <div class="weui-media-box__desc"><rich-text nodes="{{ reply.content }}" bindtap="tap"></rich-text></div>
             <div class="weui-media-box__desc"><datetime-diff :datetime="reply.created_at"></datetime-diff></div>
           </div>
+          <reply-delete :reply="reply"></reply-delete>
         </div>
       </div>
       <div class="weui-loadmore weui-loadmore_line" v-if="noMoreData">
@@ -33,7 +34,8 @@
 <config>
   {
     usingComponents: {
-      "datetime-diff": "~@/components/datetime-diff"
+      "datetime-diff": "~@/components/datetime-diff",
+      "reply-delete": "~@/components/reply-delete"
     }
   }
 </config>
